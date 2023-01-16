@@ -1,3 +1,5 @@
 rootProject.name = 'petzzang'
 include 'user-service1'
+include 'petzzang-community-service'
+include 'petzzang-ranking-service'
 
