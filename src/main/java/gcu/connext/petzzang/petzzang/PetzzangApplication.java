@@ -1,4 +1,4 @@
-package gcu.connext.petzzang;
+package gcu.connext.petzzang.petzzang;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

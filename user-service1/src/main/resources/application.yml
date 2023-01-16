@@ -1,0 +1,42 @@
+spring:
+  application:
+    name: user-service
+
+  #DB INFO
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: admin
+    password: admin36524
+    url: jdbc:mysql://localhost:3306/user?zeroDateTimeBehavior=convertToNull&useUnicode=yes&characterEncoding=UTF-8&connectTimeout=2000&autoReconnect=true&serverTimezone=UTC&useSSL=false
+
+  # profiles:
+  #   active: dev
+
+  #JPA/Hibernate
+  jpa:
+    database: mysql
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5Dialect
+        format_sql: true
+        show-sql: true
+    show-sql: 'true'
+
+server:
+  port: 8080
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql: DEBUG
+
+management:
+  health:
+    solr:
+      enabled: false

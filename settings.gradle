@@ -1,1 +1,3 @@
 rootProject.name = 'petzzang'
+include 'user-service1'
+
