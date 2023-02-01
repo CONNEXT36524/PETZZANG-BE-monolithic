@@ -1,5 +1,6 @@
 package gcu.connext.petzzang.user.controller;
 
+import gcu.connext.petzzang.PetzzangApplication;
 import gcu.connext.petzzang.user.Service.UserService;
 import gcu.connext.petzzang.user.config.jwt.JwtProperties;
 import gcu.connext.petzzang.user.dto.OauthToken;
@@ -18,7 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/api")
 public class UserController {
 
-    private static final Logger log = LoggerFactory.getLogger(UserApplication.class);
+    private static final Logger log = LoggerFactory.getLogger(PetzzangApplication.class);
     @Autowired
     private UserService userService;
 
