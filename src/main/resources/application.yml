@@ -10,10 +10,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: admin
     password: pzadmin!
-#<<<<<<< HEAD
-#    url: jdbc:mysql://210.109.63.202:10007/petzzangdb?zeroDateTimeBehavior=convertToNull&useUnicode=yes&characterEncoding=UTF-8&connectTimeout=2000&autoReconnect=true&serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true
-#=======
-    url: jdbc:mysql://pz-db.898dbc89.cbfb40eb783145cbbc2fec56fd713fd3.mysql.managed-service.kr-central-1.kakaokic.com:3306/petzzangdb?zeroDateTimeBehavior=convertToNull&useUnicode=yes&characterEncoding=UTF-8&connectTimeout=2000&autoReconnect=true&serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://210.109.63.202:10007/petzzangdb?zeroDateTimeBehavior=convertToNull&useUnicode=yes&characterEncoding=UTF-8&connectTimeout=2000&autoReconnect=true&serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true
 
 
   # profiles:
