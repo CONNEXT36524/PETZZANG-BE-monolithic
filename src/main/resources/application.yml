@@ -1,0 +1,22 @@
+spring:
+#DB INFO
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: admin
+    password: pzadmin!
+    url: jdbc:mysql://210.109.63.202:10007/petzzangdb?useSSL=false&allowMultiQueries=true&serverTimezone=UTC
+
+# profiles:
+#   active: dev
+
+#JPA/Hibernate
+  jpa:
+    database: mysql
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5Dialect
+        format_sql: true
+        show-sql: true
+      show-sql: 'true'
