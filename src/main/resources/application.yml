@@ -9,8 +9,8 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: admin
-    password: admin36524
-    url: jdbc:mysql://localhost:3306/user?zeroDateTimeBehavior=convertToNull&useUnicode=yes&characterEncoding=UTF-8&connectTimeout=2000&autoReconnect=true&serverTimezone=UTC&useSSL=false
+    password: pzadmin!
+    url: jdbc:mysql://210.109.63.202:10007/petzzangdb?zeroDateTimeBehavior=convertToNull&useUnicode=yes&characterEncoding=UTF-8&connectTimeout=2000&autoReconnect=true&serverTimezone=UTC&useSSL=false&allowPublicKeyRetrieval=true
 
   # profiles:
   #   active: dev

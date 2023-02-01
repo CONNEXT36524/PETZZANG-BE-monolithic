@@ -1,5 +1,6 @@
 package gcu.connext.petzzang.community.controller;
 
+import gcu.connext.petzzang.PetzzangApplication;
 import gcu.connext.petzzang.community.entity.Post;
 import gcu.connext.petzzang.community.repository.BoardRepository;
 import gcu.connext.petzzang.community.service.BoardService;
@@ -16,7 +17,7 @@ import java.util.List;
 @RequestMapping("/api/community")
 public class BoardController {
 
-    private final Logger log = LoggerFactory.getLogger(CommunityApplication.class);
+    private final Logger log = LoggerFactory.getLogger(PetzzangApplication.class);
     @Autowired
     private BoardService boardService;
     @Autowired

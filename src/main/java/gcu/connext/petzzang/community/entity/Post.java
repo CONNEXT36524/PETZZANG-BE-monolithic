@@ -1,5 +1,6 @@
 package gcu.connext.petzzang.community.entity;
 
+import gcu.connext.petzzang.PetzzangApplication;
 import lombok.*;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -12,7 +13,7 @@ import java.sql.Timestamp;
 @ToString
 @Getter
 @Setter
-@EntityListeners(CommunityApplication.class)
+@EntityListeners(PetzzangApplication.class)
 @Table(name = "posts_tb") //(1)
 public class Post {
 
