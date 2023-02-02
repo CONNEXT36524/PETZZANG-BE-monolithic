@@ -5,7 +5,7 @@ import lombok.Data;
 import java.sql.Timestamp;
 
 @Data
-public class PostingDTO {
+public class PostDTO {
     public Long postId;
     public Long userCode;
     public String titleName;
