@@ -5,6 +5,7 @@ import lombok.*;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
+import java.sql.ConnectionBuilder;
 import java.sql.Timestamp;
 
 @Entity
@@ -13,6 +14,7 @@ import java.sql.Timestamp;
 @ToString
 @Getter
 @Setter
+@Builder
 @EntityListeners(PetzzangApplication.class)
 @Table(name = "posts_tb") //(1)
 public class Post {
