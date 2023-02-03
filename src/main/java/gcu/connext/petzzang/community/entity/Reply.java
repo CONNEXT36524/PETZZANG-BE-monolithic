@@ -1,6 +1,11 @@
 package gcu.connext.petzzang.community.entity;
 
 import lombok.*;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -10,7 +15,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @ToString
 @Getter
-@Setter
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "replies_tb") //(1)
 public class Reply {
 
@@ -41,9 +46,11 @@ public class Reply {
     private Boolean isDeleted;
 
     @Column(name = "create_time")
+    @CreatedDate
     private Timestamp createTime;
 
     @Column(name = "update_time")
+    @LastModifiedDate
     private Timestamp updateTime;
 
     @Column(name = "delete_time")
