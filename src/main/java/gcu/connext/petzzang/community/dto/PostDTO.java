@@ -1,10 +1,12 @@
 package gcu.connext.petzzang.community.dto;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.sql.Timestamp;
 
 @Data
+@Builder
 public class PostDTO {
     public Long postId;
     public Long userCode;
@@ -19,4 +21,6 @@ public class PostDTO {
     public String pet;
     public String kind;
     public String sex;
+
+
 }
