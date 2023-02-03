@@ -55,4 +55,14 @@ public class UserController {
         //(3)
         return ResponseEntity.ok().body(user);
     }
+    @PutMapping("/profile")
+    public ResponseEntity<Object> putUserProfile(HttpServletRequest request) { //(1)
+
+
+        //(2)
+        log.info(String.valueOf(request));
+//        userService.uploadImg(request);
+        //(3)
+        return userService.uploadImg(request);
+    }
 }

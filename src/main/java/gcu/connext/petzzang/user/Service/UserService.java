@@ -10,16 +10,14 @@ import gcu.connext.petzzang.user.dto.OauthToken;
 import gcu.connext.petzzang.user.entity.User;
 import gcu.connext.petzzang.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
+import java.sql.Blob;
 import java.util.Date;
 
 @Service
@@ -148,5 +146,45 @@ public class UserService {
 
         //(4) user객체 반환
         return user;
+    }
+
+    //kic object storage 사진 업로드
+    public ResponseEntity uploadImg(HttpServletRequest request){
+        RestTemplate rt = new RestTemplate();
+
+        Blob content = (Blob) request.getAttribute("data");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("X-Auth-Token", "gAAAAABj2cWtX4ctnlFIaBZb-CVrjbEUXNkAs7Iz6sO6YeZ5tbvgwg5W0PGlnBev651VpQM_c1IK_EmK2LOqIQh_hHuYqlPi_4S0qHIXWYmS7vIqYzaKN0hrM4hNjnXxQGvtf3tKfOqoQjb9Gu_2zvMeLqJcYWtFyAjMX9DRxElmzrM0mJx4hJNY8UMB3Yfx6QBFjG723VJr" ); //(1-4)
+
+        MultiValueMap<String, Blob> params = new LinkedMultiValueMap<>();
+        params.add("Content", content);
+
+        //(1-5)
+        HttpEntity<MultiValueMap<String, String>> imgUploadRequest =
+                new HttpEntity<>(headers);
+
+        //(1-6)
+        // Http 요청 (POST 방식) 후, response 변수에 응답을 받음
+        ResponseEntity<String> imgResponse = rt.exchange(
+                "https://objectstorage.kr-central-1.kakaoi.io/v1/cbfb40eb783145cbbc2fec56fd713fd3/pz-os/thumbnail/test.png",
+                HttpMethod.PUT,
+                imgUploadRequest,
+                String.class
+        );
+
+        return new ResponseEntity(imgResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    //사진 조회해서 url받아오기
+    public String getImgUrl ()
+    {
+        return "주소";
+    }
+
+    //데이터베이스 userImg 필드 수정하기
+    public void updateProfileImg()
+    {
+
     }
 }
