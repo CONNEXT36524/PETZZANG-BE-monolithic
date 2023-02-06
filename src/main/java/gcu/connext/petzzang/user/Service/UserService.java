@@ -15,10 +15,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.sql.Blob;
 import java.util.Date;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -149,20 +154,21 @@ public class UserService {
     }
 
     //kic object storage 사진 업로드
-    public ResponseEntity uploadImg(HttpServletRequest request){
+    public ResponseEntity  uploadImg(HttpServletRequest request) throws IOException{
+        String multipartFile = (String) request.getAttribute("data");
+
+//        File uploadFile = convert(multipartFile).orElseThrow(() -> new IllegalArgumentException("MultipartFile -> File 전환 실패"));
+
         RestTemplate rt = new RestTemplate();
-
-        Blob content = (Blob) request.getAttribute("data");
-
         HttpHeaders headers = new HttpHeaders();
-        headers.add("X-Auth-Token", "gAAAAABj2cWtX4ctnlFIaBZb-CVrjbEUXNkAs7Iz6sO6YeZ5tbvgwg5W0PGlnBev651VpQM_c1IK_EmK2LOqIQh_hHuYqlPi_4S0qHIXWYmS7vIqYzaKN0hrM4hNjnXxQGvtf3tKfOqoQjb9Gu_2zvMeLqJcYWtFyAjMX9DRxElmzrM0mJx4hJNY8UMB3Yfx6QBFjG723VJr" ); //(1-4)
+        headers.add("X-Auth-Token", "gAAAAABj4F18fgzQAEGppTkAceBxc0bn9wwgEl_La_X8Sx4kzOK2UBplGPsSTlidH6EAEIKgVvkZljcKSau7Rknu32bi_YPC974K3LVJvhC3HJoxIyCQAHNelVrfi0UgUXmQlTgmkveez4Qjx-L7U51Ho7HCWU2NxZwlF5-pfPJq4C10wsdqeIOX8C_aasWp5NIQTyE9_DE6" ); //(1-4)
 
-        MultiValueMap<String, Blob> params = new LinkedMultiValueMap<>();
-        params.add("Content", content);
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("Content", multipartFile);
 
         //(1-5)
-        HttpEntity<MultiValueMap<String, String>> imgUploadRequest =
-                new HttpEntity<>(headers);
+        HttpEntity<?> imgUploadRequest =
+                new HttpEntity<>(params, headers);
 
         //(1-6)
         // Http 요청 (POST 방식) 후, response 변수에 응답을 받음
@@ -174,8 +180,16 @@ public class UserService {
         );
 
         return new ResponseEntity(imgResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
 
+    }
+//    public String upload (File uploadFile, String dirName){
+//        String fileName = dirName + "/" + uploadFile.getName();
+//        String uploadImageUrl = putS3(uploadFile, fileName);
+//
+//        removeNewFile(uploadFile);  // 로컬에 생성된 File 삭제 (MultipartFile -> File 전환 하며 로컬에 파일 생성됨)
+//
+//        return uploadImageUrl;      // 업로드된 파일의 S3 URL 주소 반환
+//    }
     //사진 조회해서 url받아오기
     public String getImgUrl ()
     {
@@ -186,5 +200,15 @@ public class UserService {
     public void updateProfileImg()
     {
 
+    }
+    private Optional<File> convert(MultipartFile file) throws IOException {
+        File convertFile = new File(file.getOriginalFilename());
+        if (convertFile.createNewFile()) {
+            try (FileOutputStream fos = new FileOutputStream(convertFile)) {
+                fos.write(file.getBytes());
+            }
+            return Optional.of(convertFile);
+        }
+        return Optional.empty();
     }
 }
