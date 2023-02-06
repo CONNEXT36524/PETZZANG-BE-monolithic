@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 
 @RestController
 @ResponseBody
@@ -60,9 +61,15 @@ public class UserController {
 
 
         //(2)
-        log.info(String.valueOf(request));
-//        userService.uploadImg(request);
+
+        try {
+            userService.uploadImg(request);
+        }
+        catch (IOException ex){
+
+        }
+
         //(3)
-        return userService.uploadImg(request);
+        return ResponseEntity.ok().body("of");
     }
 }
