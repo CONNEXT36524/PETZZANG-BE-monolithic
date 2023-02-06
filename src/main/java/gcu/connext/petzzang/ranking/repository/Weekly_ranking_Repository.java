@@ -1,6 +1,7 @@
 package gcu.connext.petzzang.ranking.repository;
 
 import gcu.connext.petzzang.ranking.entity.Weekly_ranking_entity;
+import gcu.connext.petzzang.ranking.ranking.dto.weeklyresponsedto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

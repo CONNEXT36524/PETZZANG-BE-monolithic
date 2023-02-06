@@ -18,7 +18,10 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Post findByPostId(Long postCode);
 
 
-        @Query(value = "select * from posts_tb where create_time>=DATE_SUB(NOW(),INTERVAL (DAYOFWEEK(NOW())-1) DAY) ORDER BY views DESC", nativeQuery = true)
-        public List<Post> finddate();
+        @Query(value = "select * from posts_tb where DATE(create_time)>=DATE_SUB(NOW(),INTERVAL (DAYOFWEEK(NOW())) DAY) ORDER BY views DESC", nativeQuery = true)
+        public List<Post> findweekdate();
+
+    @Query(value = "select * from posts_tb where month(create_time)=month(NOW()) ORDER BY views DESC", nativeQuery = true)
+    public List<Post> findmonthdate();
 
 }

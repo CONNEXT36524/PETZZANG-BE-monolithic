@@ -1,7 +1,9 @@
 package gcu.connext.petzzang.ranking.controller;
 
 
+import gcu.connext.petzzang.ranking.entity.Monthly_ranking_tb;
 import gcu.connext.petzzang.ranking.entity.Weekly_ranking_entity;
+import gcu.connext.petzzang.ranking.ranking.dto.weeklyresponsedto;
 import gcu.connext.petzzang.ranking.repository.Monthly_ranking_Repository;
 import gcu.connext.petzzang.ranking.repository.Weekly_ranking_Repository;
 import gcu.connext.petzzang.ranking.service.rankingload_service;
@@ -23,11 +25,26 @@ public class rankingcontroller {
     private gcu.connext.petzzang.ranking.service.rankingload_service rankingload_service;
 
     @GetMapping("/ranking/load")
-    public Weekly_ranking_entity getRanking(@RequestParam("date") String date){
-        Weekly_ranking_entity ranking=weekly_ranking_repository.findbydate(date);
-        System.out.println(ranking);
+    public weeklyresponsedto getRanking(@RequestParam("date") String date, @RequestParam("type") String type){
+        if(type.equals("week")) {
+            Weekly_ranking_entity ranking = weekly_ranking_repository.findbydate(date);
+            System.out.println(ranking);
+            if(ranking==null){
+                return null;
+            }
+            else return new weeklyresponsedto(ranking);
+        }
+        else if(type.equals("month"))
+        {
+            Monthly_ranking_tb ranking=monthly_ranking_repository.findbydate(date.substring(0,6));
+            if(ranking==null){
+                return null;
+            }
+            else return new weeklyresponsedto(ranking);
+        }
+        else{System.out.println("error");
+        return null;}
 
-        return ranking;
     }
 
 }
