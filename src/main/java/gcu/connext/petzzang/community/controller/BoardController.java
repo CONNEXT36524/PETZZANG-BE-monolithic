@@ -18,8 +18,7 @@ import java.util.List;
 public class BoardController {
 
     private final Logger log = LoggerFactory.getLogger(PetzzangApplication.class);
-    @Autowired
-    private BoardService boardService;
+
     @Autowired
     private BoardRepository boardRepository;
 
@@ -135,17 +134,5 @@ public class BoardController {
         log.info(posts.toString());
         return posts;
     }
-
-    @GetMapping("/board/search")
-    public List<Post> getSearchPosts(@RequestParam String keyword) {
-        log.info(keyword);
-
-        // keyword = 사용자가 입력한 검색어
-        // keyword 들어가는 게시글 가져와서 프론트로 보내주기
-        List<Post> posts = boardService.search(keyword);
-
-        return posts;
-    }
-
 
 }
