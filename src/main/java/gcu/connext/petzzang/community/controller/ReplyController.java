@@ -13,7 +13,7 @@ import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/api/community/posts")
+@RequestMapping("/api/community")
 public class ReplyController {
 
     @Autowired
@@ -22,7 +22,7 @@ public class ReplyController {
     @Autowired
     private ModelMapper modelMapper;
 
-    @GetMapping("/posts")
+    @GetMapping("/get-replies")
     public List<Reply> getReplies(@RequestParam(value="postId",required=false) Integer key
     ) throws Exception {
 
@@ -32,7 +32,7 @@ public class ReplyController {
         return ReplyService.getReply(postId);
     }
     
-    @PostMapping("/reply")
+    @PostMapping("/post-replies")
     @ResponseStatus(HttpStatus.CREATED)
     public Reply createReply(
             @ModelAttribute ReplyDTO replyDTO

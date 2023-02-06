@@ -15,6 +15,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @ToString
 @Getter
+@Setter
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "replies_tb") //(1)
 public class Reply {

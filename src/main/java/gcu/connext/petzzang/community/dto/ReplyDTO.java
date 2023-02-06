@@ -16,7 +16,7 @@ public class ReplyDTO {
 
     public Long postId;
 
-    public Long boardType;
+    public String boardType;
 
     public Long bundleId;
 
