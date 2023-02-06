@@ -29,7 +29,7 @@ public class Reply {
     private Long postId;
 
     @Column(name = "board_type")
-    private Long boardType;
+    private String boardType;
 
     @Column(name = "bundle_id")
     private Long bundleId;
