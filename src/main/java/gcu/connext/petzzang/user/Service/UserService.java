@@ -10,17 +10,20 @@ import gcu.connext.petzzang.user.dto.OauthToken;
 import gcu.connext.petzzang.user.entity.User;
 import gcu.connext.petzzang.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.sql.Blob;
 import java.util.Date;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -148,5 +151,64 @@ public class UserService {
 
         //(4) user객체 반환
         return user;
+    }
+
+    //kic object storage 사진 업로드
+    public ResponseEntity  uploadImg(HttpServletRequest request) throws IOException{
+        String multipartFile = (String) request.getAttribute("data");
+
+//        File uploadFile = convert(multipartFile).orElseThrow(() -> new IllegalArgumentException("MultipartFile -> File 전환 실패"));
+
+        RestTemplate rt = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("X-Auth-Token", "gAAAAABj4F18fgzQAEGppTkAceBxc0bn9wwgEl_La_X8Sx4kzOK2UBplGPsSTlidH6EAEIKgVvkZljcKSau7Rknu32bi_YPC974K3LVJvhC3HJoxIyCQAHNelVrfi0UgUXmQlTgmkveez4Qjx-L7U51Ho7HCWU2NxZwlF5-pfPJq4C10wsdqeIOX8C_aasWp5NIQTyE9_DE6" ); //(1-4)
+
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("Content", multipartFile);
+
+        //(1-5)
+        HttpEntity<?> imgUploadRequest =
+                new HttpEntity<>(params, headers);
+
+        //(1-6)
+        // Http 요청 (POST 방식) 후, response 변수에 응답을 받음
+        ResponseEntity<String> imgResponse = rt.exchange(
+                "https://objectstorage.kr-central-1.kakaoi.io/v1/cbfb40eb783145cbbc2fec56fd713fd3/pz-os/thumbnail/test.png",
+                HttpMethod.PUT,
+                imgUploadRequest,
+                String.class
+        );
+
+        return new ResponseEntity(imgResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+
+    }
+//    public String upload (File uploadFile, String dirName){
+//        String fileName = dirName + "/" + uploadFile.getName();
+//        String uploadImageUrl = putS3(uploadFile, fileName);
+//
+//        removeNewFile(uploadFile);  // 로컬에 생성된 File 삭제 (MultipartFile -> File 전환 하며 로컬에 파일 생성됨)
+//
+//        return uploadImageUrl;      // 업로드된 파일의 S3 URL 주소 반환
+//    }
+    //사진 조회해서 url받아오기
+    public String getImgUrl ()
+    {
+        return "주소";
+    }
+
+    //데이터베이스 userImg 필드 수정하기
+    public void updateProfileImg()
+    {
+
+    }
+    private Optional<File> convert(MultipartFile file) throws IOException {
+        File convertFile = new File(file.getOriginalFilename());
+        if (convertFile.createNewFile()) {
+            try (FileOutputStream fos = new FileOutputStream(convertFile)) {
+                fos.write(file.getBytes());
+            }
+            return Optional.of(convertFile);
+        }
+        return Optional.empty();
     }
 }

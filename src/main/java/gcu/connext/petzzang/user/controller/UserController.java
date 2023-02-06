@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 
 @RestController
 @ResponseBody
@@ -54,5 +55,21 @@ public class UserController {
 
         //(3)
         return ResponseEntity.ok().body(user);
+    }
+    @PutMapping("/profile")
+    public ResponseEntity<Object> putUserProfile(HttpServletRequest request) { //(1)
+
+
+        //(2)
+
+        try {
+            userService.uploadImg(request);
+        }
+        catch (IOException ex){
+
+        }
+
+        //(3)
+        return ResponseEntity.ok().body("of");
     }
 }
