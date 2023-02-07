@@ -8,76 +8,76 @@ import java.util.List;
 
 public class setranking {
 
-    public ArrayList<Long> calculate(List<Post> post){
-        long first=0,second=0,third=0,fourth=0,fifth=0,sixth=0;
+    public ArrayList<Post> calculate(List<Post> post){
+        Post first=null,second=null,third=null,fourth=null,fifth=null,sixth=null;
         float firstscore=0,secondscore=0,thirdscore=0,fourthscore=0,fifthscore=0,sixthscore=0;
         System.out.println(post);
         for(Post rank : post)
         {
-            if(first==0L)
+            if(first==null)
             {
-                first=rank.getPostId();
+                first=rank;
                 firstscore=rank.getViews();
             }
-            else if(second==0L)
+            else if(second==null)
             {
-                second=rank.getPostId();
+                second=rank;
                 secondscore=rank.getViews();
             }
-            else if(third==0L)
+            else if(third==null)
             {
-                third=rank.getPostId();
+                third=rank;
                 thirdscore=rank.getViews();
             }
-            else if(fourth==0L)
+            else if(fourth==null)
             {
-                fourth=rank.getPostId();
+                fourth=rank;
                 fourthscore=rank.getViews();
             }
-            else if(fifth==0L)
+            else if(fifth==null)
             {
-                fifth=rank.getPostId();
+                fifth=rank;
                 fifthscore=rank.getViews();
             }
-            else if(sixth==0L)
+            else if(sixth==null)
             {
-                sixth=rank.getPostId();
+                sixth=rank;
                 sixthscore=rank.getViews();
             }
             else if((float)rank.getViews()>sixthscore)
             {
-                sixth=rank.getPostId();
+                sixth=rank;
                 sixthscore=rank.getViews();
                 if(rank.getViews()>fifthscore)
                 {
                     sixth=fifth;
                     sixthscore=fifthscore;
                     fifthscore=rank.getViews();
-                    fifth=rank.getPostId();
-                    if(rank.getViews()>fourth)
+                    fifth=rank;
+                    if(rank.getViews()>fourthscore)
                     {
                         fifth=fourth;
                         fifthscore=fourthscore;
                         fourthscore=rank.getViews();
-                        fourth=rank.getPostId();
+                        fourth=rank;
                         if(rank.getViews()>thirdscore)
                         {
                             fourth=third;
                             fourthscore=thirdscore;
                             thirdscore=rank.getViews();
-                            third=rank.getPostId();
+                            third=rank;
                             if(rank.getViews()>secondscore)
                             {
                                 third=second;
                                 thirdscore=secondscore;
                                 secondscore=rank.getViews();
-                                second=rank.getPostId();
+                                second=rank;
                                 if(rank.getViews()>firstscore)
                                 {
                                     second=first;
                                     secondscore=firstscore;
                                     firstscore=rank.getViews();
-                                    first=rank.getPostId();
+                                    first=rank;
                                 }
                             }
                         }
@@ -89,7 +89,6 @@ public class setranking {
         System.out.println(second);
         System.out.println(third);
         System.out.println(fourth);
-        ArrayList<Long> result = new ArrayList<Long>(Arrays.asList(first,second,third,fourth,fifth,sixth));
-        return result;
+        return new ArrayList<Post>(Arrays.asList(first,second,third,fourth,fifth,sixth));
     }
 }
