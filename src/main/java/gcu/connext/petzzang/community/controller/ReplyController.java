@@ -10,11 +10,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.logging.Logger;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/community")
 public class ReplyController {
+
 
     @Autowired
     private ReplyService ReplyService;
@@ -27,9 +29,16 @@ public class ReplyController {
     ) throws Exception {
 
         Integer postId = Integer.valueOf(key);
-        //save in mysql database
-        ReplyService.getReply(postId);
+
         return ReplyService.getReply(postId);
+    }
+    @GetMapping("/get-nreplies")
+    public List<Reply> getNReplies(@RequestParam(value="bundleId",required=false) Integer key
+    ) throws Exception {
+
+        Integer bundleId = Integer.valueOf(key);
+
+        return ReplyService.getNReply(bundleId);
     }
     
     @PostMapping("/post-replies")
@@ -42,9 +51,24 @@ public class ReplyController {
         Reply reply = modelMapper.map(replyDTO, Reply.class);
 
         //save in mysql database
-        ReplyService.uploadReply(reply);
+        //ReplyService.uploadReply(reply);
         //URI uriLocation = new URI("/board/" + board.getID());
         return ReplyService.uploadReply(reply);
+    }
+
+    @PostMapping("/post-nreplies")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Reply createNReply(
+            @ModelAttribute ReplyDTO replyDTO
+    ) throws Exception {
+
+        //DTO to Entity
+        Reply reply = modelMapper.map(replyDTO, Reply.class);
+
+        //save in mysql database
+        //ReplyService.uploadReply(reply);
+        //URI uriLocation = new URI("/board/" + board.getID());
+        return ReplyService.uploadNReply(reply);
     }
 
 }
