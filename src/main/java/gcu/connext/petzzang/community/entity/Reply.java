@@ -31,6 +31,7 @@ public class Reply {
     @Column(name = "board_type")
     private String boardType;
 
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "bundle_id")
     private Long bundleId;
 
@@ -44,7 +45,7 @@ public class Reply {
     private String content;
 
     @Column(name = "is_deleted")
-    private Boolean isDeleted;
+    private boolean isDeleted;
 
     @Column(name = "create_time")
     @CreatedDate
