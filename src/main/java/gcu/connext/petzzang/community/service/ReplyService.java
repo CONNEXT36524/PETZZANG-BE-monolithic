@@ -1,6 +1,5 @@
 package gcu.connext.petzzang.community.service;
 
-import gcu.connext.petzzang.community.entity.Post;
 import gcu.connext.petzzang.community.entity.Reply;
 import gcu.connext.petzzang.community.repository.ReplyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,9 +81,9 @@ public class ReplyService {
     class ReplyBundleOrderComparator implements Comparator<Reply> {
         @Override
         public int compare(Reply r1, Reply r2) {
-            if (r1.getBundleId() > r2.getBundleId()) {
+            if (r1.getBundleOrder() > r2.getBundleOrder()) {
                 return 1;
-            } else if (r1.getBundleId() < r2.getBundleId()) {
+            } else if (r1.getBundleOrder() < r2.getBundleOrder()) {
                 return -1;
             }
             return 0;
