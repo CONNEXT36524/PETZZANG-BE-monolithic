@@ -17,30 +17,33 @@ import java.util.logging.Logger;
 @RequestMapping("/api/community")
 public class ReplyController {
 
-
     @Autowired
     private ReplyService ReplyService;
 
     @Autowired
     private ModelMapper modelMapper;
 
+
     @GetMapping("/get-replies")
-    public List<Reply> getReplies(@RequestParam(value="postId",required=false) Integer key
+    public List<Reply> getReplies(@RequestParam(value="postId",required=false) Integer postIdKey
     ) throws Exception {
 
-        Integer postId = Integer.valueOf(key);
+        Integer postId = Integer.valueOf(postIdKey);
 
         return ReplyService.getReply(postId);
     }
     @GetMapping("/get-nreplies")
-    public List<Reply> getNReplies(@RequestParam(value="bundleId",required=false) Integer key
+    public List<Reply> getNReplies(@RequestParam(value="postId",required=false) Integer postIdKey,
+                                   @RequestParam(value="bundleId",required=false) Integer bundleIdKey
     ) throws Exception {
 
-        Integer bundleId = Integer.valueOf(key);
-
-        return ReplyService.getNReply(bundleId);
+        Integer postId = Integer.valueOf(postIdKey);
+        Integer bundleId = Integer.valueOf(bundleIdKey);
+        System.out.println("postIdKey--" +postIdKey);
+        System.out.println("bundleIdKey--" + bundleIdKey);
+        return ReplyService.getNReply(postId, bundleId);
     }
-    
+
     @PostMapping("/post-replies")
     @ResponseStatus(HttpStatus.CREATED)
     public Reply createReply(
@@ -50,9 +53,7 @@ public class ReplyController {
         //DTO to Entity
         Reply reply = modelMapper.map(replyDTO, Reply.class);
 
-        //save in mysql database
-        //ReplyService.uploadReply(reply);
-        //URI uriLocation = new URI("/board/" + board.getID());
+
         return ReplyService.uploadReply(reply);
     }
 
@@ -65,9 +66,6 @@ public class ReplyController {
         //DTO to Entity
         Reply reply = modelMapper.map(replyDTO, Reply.class);
 
-        //save in mysql database
-        //ReplyService.uploadReply(reply);
-        //URI uriLocation = new URI("/board/" + board.getID());
         return ReplyService.uploadNReply(reply);
     }
 

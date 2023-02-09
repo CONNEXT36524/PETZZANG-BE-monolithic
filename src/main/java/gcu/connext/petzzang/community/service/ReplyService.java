@@ -13,7 +13,6 @@ import java.util.List;
 @Service
 public class ReplyService {
 
-
     @Autowired
     private ReplyRepository replyRepository;
 
@@ -25,28 +24,26 @@ public class ReplyService {
     }
 
     @Transactional
-    public List<Reply> getNReply(Integer bundleId) {
-        List<Reply> replyList = replyRepository.findByBundleId(Long.valueOf(bundleId));
-
+    public List<Reply> getNReply(Integer postId, Integer bundleId) {
+        List<Reply> replyList = replyRepository.findByPostIdAndBundleId(Long.valueOf(postId), Long.valueOf(bundleId));
+        System.out.println("replylist--" + replyList);
         return replyList;
     }
 
     //mysql에 댓글 저장하기
     public Reply uploadReply(Reply reply) {
-
         List<Reply> replyList = replyRepository.findByPostId(Long.valueOf(reply.getPostId()));
         if (replyList.size() != 0)
         {
 
-            Collections.sort(replyList, new ReplyBundleIdComparator().reversed());
-            Long latestBundleId = replyList.get(0).getBundleId();
-            reply.setBundleId(latestBundleId + 1);
+            Collections.sort(replyList, new ReplyBundleOrderComparator());
+            Long latestBundleId = replyList.get(replyList.size() -1).getBundleId();
+            reply.setBundleId(latestBundleId +  1);
             return replyRepository.save(reply);
         }
         else {
             return replyRepository.save(reply);
         }
-
     }
 
     public Reply uploadNReply(Reply reply) {
@@ -55,8 +52,8 @@ public class ReplyService {
         if (replyList.size() != 0)
         {
 
-            Collections.sort(replyList, new ReplyBundleOrderComparator().reversed());
-            Long latestBundleOrder = replyList.get(0).getBundleOrder();
+            Collections.sort(replyList, new ReplyBundleOrderComparator());
+            Long latestBundleOrder = replyList.get(replyList.size() -1).getBundleOrder();
             reply.setBundleOrder(latestBundleOrder + 1);
             return replyRepository.save(reply);
         }
