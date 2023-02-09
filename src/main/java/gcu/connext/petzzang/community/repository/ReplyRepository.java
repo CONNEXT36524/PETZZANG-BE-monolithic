@@ -18,4 +18,7 @@ public interface ReplyRepository extends JpaRepository<Reply, Long> {
     List<Reply> findByBundleId(Long bundleId);
 
     List<Reply> findByBundleOrder(Long bundleOrder);
+
+    List<Reply> findByPostIdAndBundleId(Long postId, Long bundleId);
+
 }

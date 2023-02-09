@@ -31,7 +31,6 @@ public class Reply {
     @Column(name = "board_type")
     private String boardType;
 
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "bundle_id")
     private Long bundleId;
 
