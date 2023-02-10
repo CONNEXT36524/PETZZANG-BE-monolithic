@@ -19,14 +19,48 @@ public class PostController {
     private PostService PostService;
 
     @GetMapping("/posts")
-    public Post getPost(@RequestParam(value="postId",required=false) Integer key
+    public Post getPost(@RequestParam(name="postId",required=false) Integer key
     ) throws Exception {
 
         Integer postId = Integer.valueOf(key);
         //save in mysql database
         PostService.downloadPost(postId);
         //URI uriLocation = new URI("/board/" + board.getID());
+<<<<<<< Updated upstream
         return PostService.downloadPost(postId);
+=======
+        return postService.downloadPost(postId);
+    }
+
+    @DeleteMapping("/posts")
+    public String deletePost(@RequestParam(name="postId",required=false) Integer key
+    ) throws Exception {
+
+        Integer postId = Integer.valueOf(key);
+        //save in mysql database
+        postService.downloadPost(postId);
+        //URI uriLocation = new URI("/board/" + board.getID());
+        return postService.deletePost(postId);
+    }
+
+    @PostMapping("/likeNum")
+    @ResponseStatus(HttpStatus.OK)
+    public Post updateLikeNum( @RequestParam(name="postId") Integer postIdKey
+
+    ) throws Exception {
+
+        Long postId = Long.valueOf(postIdKey);
+        return postService.updateLikeNum(postId);
+    }
+
+    @PostMapping("/view")
+    @ResponseStatus(HttpStatus.OK)
+    public Post updateView( @RequestParam(name="postId") Integer postIdKey
+    ) throws Exception {
+
+        Long postId = Long.valueOf(postIdKey);
+        return postService.updateView(postId);
+>>>>>>> Stashed changes
     }
 
 }

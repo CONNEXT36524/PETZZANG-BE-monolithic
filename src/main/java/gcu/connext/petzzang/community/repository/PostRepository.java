@@ -13,6 +13,10 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     // JPA findBy 규칙
 
+    //postId로 게시글 삭제하기
+    @Transactional
+    void deleteByPostId(Long postId);
+
     Post findByBoardType(Long boardType);
 
     Post findByPostId(Long postCode);
