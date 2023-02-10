@@ -15,6 +15,7 @@ public class PostService {
     public Post downloadPost(Integer postId) {
         return postRepository.findByPostId(Long.valueOf(postId));
     }
+
     public Post updateLikeNum(Long postId) {
 
         Post posts = postRepository.findByPostId(Long.valueOf(postId));
@@ -23,6 +24,12 @@ public class PostService {
         return postRepository.findByPostId(Long.valueOf(postId));
     }
 
+    public Post updateView(Long postId) {
 
+        Post posts = postRepository.findByPostId(Long.valueOf(postId));
+        Long view = posts.getViews();
+        postRepository.updateView(postId, view + 1);
+        return postRepository.findByPostId(Long.valueOf(postId));
+    }
 
 }

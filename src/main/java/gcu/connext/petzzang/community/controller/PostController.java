@@ -41,5 +41,14 @@ public class PostController {
         return postService.updateLikeNum(postId);
     }
 
+    @PostMapping("/view")
+    @ResponseStatus(HttpStatus.OK)
+    public Post updateView( @RequestParam(name="postId") Integer postIdKey
+
+    ) throws Exception {
+
+        Long postId = Long.valueOf(postIdKey);
+        return postService.updateView(postId);
+    }
 
 }
