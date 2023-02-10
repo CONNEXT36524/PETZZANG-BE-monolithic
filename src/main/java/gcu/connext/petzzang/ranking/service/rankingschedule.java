@@ -36,8 +36,8 @@ public class rankingschedule {
 
         List<Post> weekpost=postRepository.findweekdate();
         List<Post> monthpost=postRepository.findmonthdate();
-        ArrayList<Long> weekresult= setranking.calculate(weekpost);
-        ArrayList<Long> monthresult= setranking.calculate(monthpost);
+        ArrayList<Post> weekresult= setranking.calculate(weekpost);
+        ArrayList<Post> monthresult= setranking.calculate(monthpost);
         System.out.println(weekresult);
         // 현재 날짜 구하기
         LocalDate now = LocalDate.now();

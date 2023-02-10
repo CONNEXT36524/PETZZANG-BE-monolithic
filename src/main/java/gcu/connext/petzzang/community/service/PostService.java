@@ -15,14 +15,14 @@ public class PostService {
     public Post downloadPost(Integer postId) {
         return postRepository.findByPostId(Long.valueOf(postId));
     }
-<<<<<<< Updated upstream
-=======
+
 
     //게시글 삭제하기
     public String deletePost(Integer postId) {
         postRepository.deleteByPostId(Long.valueOf(postId));
         return ("succes");
     }
+
 
     public Post updateLikeNum(Long postId) {
 
@@ -40,5 +40,4 @@ public class PostService {
         return postRepository.findByPostId(Long.valueOf(postId));
     }
 
->>>>>>> Stashed changes
 }
