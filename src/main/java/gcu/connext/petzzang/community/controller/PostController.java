@@ -31,14 +31,24 @@ public class PostController {
         return postService.downloadPost(postId);
     }
 
-    @PostMapping("/likeNum")
+    @PostMapping("/pluslikeNum")
     @ResponseStatus(HttpStatus.OK)
-    public Post updateLikeNum( @RequestParam(name="postId") Integer postIdKey
+    public Post plusLikeNum( @RequestParam(name="postId") Integer postIdKey
 
     ) throws Exception {
 
         Long postId = Long.valueOf(postIdKey);
-        return postService.updateLikeNum(postId);
+        return postService.plusLikeNum(postId);
+    }
+
+    @PostMapping("/minuslikeNum")
+    @ResponseStatus(HttpStatus.OK)
+    public Post minusLikeNum( @RequestParam(name="postId") Integer postIdKey
+
+    ) throws Exception {
+
+        Long postId = Long.valueOf(postIdKey);
+        return postService.minusLikeNum(postId);
     }
 
     @PostMapping("/view")

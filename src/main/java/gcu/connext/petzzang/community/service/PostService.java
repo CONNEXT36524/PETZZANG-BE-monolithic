@@ -16,11 +16,18 @@ public class PostService {
         return postRepository.findByPostId(Long.valueOf(postId));
     }
 
-    public Post updateLikeNum(Long postId) {
+    public Post plusLikeNum(Long postId) {
 
         Post posts = postRepository.findByPostId(Long.valueOf(postId));
         Long likeNum = posts.getLikeNum();
         postRepository.updateLikeNum(postId, likeNum + 1);
+        return postRepository.findByPostId(Long.valueOf(postId));
+    }
+    public Post minusLikeNum(Long postId) {
+
+        Post posts = postRepository.findByPostId(Long.valueOf(postId));
+        Long likeNum = posts.getLikeNum();
+        postRepository.updateLikeNum(postId, likeNum - 1);
         return postRepository.findByPostId(Long.valueOf(postId));
     }
 
