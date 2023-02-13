@@ -165,59 +165,61 @@ public class UserService {
     //kic object storage 사진 업로드
     public Mono<String>  uploadImg(MultipartHttpServletRequest request) throws IOException{
 
-        // request에서 multpartFile 가져오기
-        MultipartFile multpartFile = (MultipartFile) request.getFile("data");
-        System.out.println(multpartFile);
+        MultipartFile multpartFile = (MultipartFile) request.getFile("img");
+//        String contentType = request.getContentType();
+        File uploadFile1 = fileconvert(multpartFile).orElseThrow(() -> new IllegalArgumentException("MultipartFile -> File fail"));
+        byte[] uploadFile2 = convert(multpartFile);
+//        InputStream asdf = multpartFile.getInputStream();
 
-        // request에서 contentType 확인하기
-        String contentType = request.getContentType();
-        System.out.println(contentType);
-
-        // multpartFile File로 변환
-        // File uploadFile = convert(multpartFile).orElseThrow(() -> new IllegalArgumentException("MultipartFile -> File fail"));
-
-        //byte[] uploadFile = convert(multpartFile);
-        //InputStream asdf = multpartFile.getInputStream();
-
-
-        // api 요청
-        RestTemplate rt = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("X-Auth-Token", "gAAAAABj4uyNfvgl2lPl8e2Q7MEqsS51prENB5MmF2f0yNb4iaN7LjiltwOnc_kdsO2RPOG6siqcwtaVJq_GSfa5pi0Dc_vBI6I8j9_d62MZV-8__kfoYP2GWBjK-9jULCtBeghD0tEAiw4oIbdWI_DUSyt7dmP-yI9MbBt6WIPp7IjYH4HFW1NJ8cU4lo4fQrDq9G1IkDm9" ); //(1-4)
+//        RestTemplate rt = new RestTemplate();
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.add("X-Auth-Token", "gAAAAABj4uyNfvgl2lPl8e2Q7MEqsS51prENB5MmF2f0yNb4iaN7LjiltwOnc_kdsO2RPOG6siqcwtaVJq_GSfa5pi0Dc_vBI6I8j9_d62MZV-8__kfoYP2GWBjK-9jULCtBeghD0tEAiw4oIbdWI_DUSyt7dmP-yI9MbBt6WIPp7IjYH4HFW1NJ8cU4lo4fQrDq9G1IkDm9" ); //(1-4)
 //        headers.setContentType(MediaType.IMAGE_PNG);
 //        headers.set("Content-Type", "image/png");
-
-//        MultiValueMap<String, File> params = new LinkedMultiValueMap<>();
+//
+//        log.info(contentType);
+//
+//
+//        MultiValueMap<String, byte[]> params = new LinkedMultiValueMap<>();
 //        params.add("Content", uploadFile);
-
-        //(1-5)
+//
+//        //(1-5)
 //        HttpEntity<MultiValueMap<String, byte[]>>  imgUploadRequest =
 //                new HttpEntity<>(params, headers);
-
-        //(1-6)
-        //Http 요청 (POST 방식) 후, response 변수에 응답을 받음
+//
+//        //(1-6)
+//        // Http 요청 (POST 방식) 후, response 변수에 응답을 받음
 //        ResponseEntity<String> imgResponse = rt.exchange(
 //                "https://objectstorage.kr-central-1.kakaoi.io/v1/cbfb40eb783145cbbc2fec56fd713fd3/pz-os/thumbnail/test.png",
-//                HttpMethod.POST,
+//                HttpMethod.PUT,
 //                imgUploadRequest,
 //                String.class
 //        );
 //        removeNewFile(uploadFile);
 
-//        WebClient webClient = WebClient.builder()
-//                .defaultHeader("X-Auth-Token", "gAAAAABj6YqyozXWIgykcaTiKJaHnyCi5BarBX3Mcmtlg6FUhMXfZCysHiDnK_3FzB1FXwQU4yOtmwXlVMBlltx3UXhn1vwIj5YvKLXNCFtfY73nZGdqKQ-x5xbIDCLmLXOZ3gzieYFKh7UL56EDB4auCmf7vrUf3ZYw4RVvFXCYo1x-RjKg-LSIUGINZgaCdGZ9NYQMM1Gx")
-//                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.IMAGE_PNG_VALUE)
-//                .build();
-//
-//
-//        Mono<String> result = webClient.put()
-//                .uri("https://objectstorage.kr-central-1.kakaoi.io/v1/cbfb40eb783145cbbc2fec56fd713fd3/pz-os/thumbnail/test3.png")
-//                .bodyValue(uploadFile)
-//                .retrieve()
-//                .bodyToMono(String.class);
+        WebClient webClient = WebClient.builder()
+                .defaultHeader("X-Auth-Token", "gAAAAABj5asWzIDyUabjJHcFt0XtONghDo7TOa7YaZUvNHHgmCpTy8eR1wuo7HWzL_wMGyHU8QmqPKroh1uOhK0aRwg5t_U6up7i4RyrmiXWOkgwamkr-DzpqaJRlR4flVuPThdT_ny2DMTsROQSRV2oLvCtxqRPT7Kqi2__HZtobdqDz3MCIbRSwh1P5NfpCgo_-rj2EC7U")
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.IMAGE_PNG_VALUE)
+                .build();
 
 
-        return null;
+        Mono<String> result = webClient.put()
+                .uri("https://objectstorage.kr-central-1.kakaoi.io/v1/cbfb40eb783145cbbc2fec56fd713fd3/pz-os/thumbnail/test3.png")
+                .bodyValue(uploadFile1)
+                .retrieve()
+                .onStatus(
+                        httpStatus -> httpStatus != HttpStatus.OK,
+                        clientResponse -> {
+                            return clientResponse.createException()
+                                    .flatMap(it -> Mono.error(new RuntimeException("code : " + clientResponse.statusCode())));
+                        })
+                .bodyToMono(String.class)
+                .onErrorResume(throwable -> {
+                    return Mono.error(new RuntimeException(throwable));
+                });
+
+
+        return result;
 
     }
     //    public String upload (File uploadFile, String dirName){
@@ -228,8 +230,6 @@ public class UserService {
 //
 //        return uploadImageUrl;      // 업로드된 파일의 S3 URL 주소 반환
 //    }
-
-
     //사진 조회해서 url받아오기
     public String getImgUrl ()
     {
@@ -248,8 +248,7 @@ public class UserService {
             log.info("delete fail");
         }
     }
-
-    private Optional<File> convert(MultipartFile file) throws IOException {
+    private Optional<File> fileconvert(MultipartFile file) throws IOException {
         File convertFile = new File(file.getOriginalFilename());
         if (convertFile.createNewFile()) {
             try (FileOutputStream fos = new FileOutputStream(convertFile)) {
@@ -257,15 +256,15 @@ public class UserService {
             }
             return Optional.of(convertFile);
         }
-    return Optional.empty();
- }
+        return Optional.empty();
+    }
 
-//    private byte[] convert(MultipartFile file) throws IOException {
-//
-//        Base64.Encoder encoder = Base64.getEncoder();
-//        byte[] photoEncode = encoder.encode(file.getBytes());
-//        String photoImg = new String(photoEncode, "UTF8");
-//
-//        return photoEncode;
-//    }
+    private byte[] convert(MultipartFile file) throws IOException {
+
+        Base64.Encoder encoder = Base64.getEncoder();
+        byte[] photoEncode = encoder.encode(file.getBytes());
+        String photoImg = new String(photoEncode, "UTF8");
+
+        return photoEncode;
+    }
 }
