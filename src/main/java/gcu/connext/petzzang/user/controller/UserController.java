@@ -65,7 +65,7 @@ public class UserController {
         //(2)
 
         try {
-           Mono<String> result = userService.uploadImg(request);
+            Mono<String> result = userService.uploadImg(request);
             return ResponseEntity.ok().body(result);
         }
         catch (IOException ex){

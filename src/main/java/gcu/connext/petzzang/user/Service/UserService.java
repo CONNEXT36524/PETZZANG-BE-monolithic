@@ -213,7 +213,7 @@ public class UserService {
         return result;
 
     }
-//    public String upload (File uploadFile, String dirName){
+    //    public String upload (File uploadFile, String dirName){
 //        String fileName = dirName + "/" + uploadFile.getName();
 //        String uploadImageUrl = putS3(uploadFile, fileName);
 //
