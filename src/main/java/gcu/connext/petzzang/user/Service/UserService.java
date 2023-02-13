@@ -167,8 +167,8 @@ public class UserService {
 
         MultipartFile multpartFile = (MultipartFile) request.getFile("img");
 //        String contentType = request.getContentType();
-//        File uploadFile = convert(multpartFile).orElseThrow(() -> new IllegalArgumentException("MultipartFile -> File fail"));
-        byte[] uploadFile = convert(multpartFile);
+        File uploadFile1 = fileconvert(multpartFile).orElseThrow(() -> new IllegalArgumentException("MultipartFile -> File fail"));
+        byte[] uploadFile2 = convert(multpartFile);
 //        InputStream asdf = multpartFile.getInputStream();
 
 //        RestTemplate rt = new RestTemplate();
@@ -205,9 +205,18 @@ public class UserService {
 
         Mono<String> result = webClient.put()
                 .uri("https://objectstorage.kr-central-1.kakaoi.io/v1/cbfb40eb783145cbbc2fec56fd713fd3/pz-os/thumbnail/test3.png")
-                .bodyValue(uploadFile)
+                .bodyValue(uploadFile1)
                 .retrieve()
-                .bodyToMono(String.class);
+                .onStatus(
+                        httpStatus -> httpStatus != HttpStatus.OK,
+                        clientResponse -> {
+                            return clientResponse.createException()
+                                    .flatMap(it -> Mono.error(new RuntimeException("code : " + clientResponse.statusCode())));
+                        })
+                .bodyToMono(String.class)
+                .onErrorResume(throwable -> {
+                    return Mono.error(new RuntimeException(throwable));
+                });
 
 
         return result;
@@ -239,16 +248,16 @@ public class UserService {
             log.info("delete fail");
         }
     }
-//    private Optional<File> convert(MultipartFile file) throws IOException {
-////        File convertFile = new File(file.getOriginalFilename());
-////        if (convertFile.createNewFile()) {
-////            try (FileOutputStream fos = new FileOutputStream(convertFile)) {
-////                fos.write(file.getBytes());
-////            }
-////            return Optional.of(convertFile);
-////        }
-////        return Optional.empty();
-//    }
+    private Optional<File> fileconvert(MultipartFile file) throws IOException {
+        File convertFile = new File(file.getOriginalFilename());
+        if (convertFile.createNewFile()) {
+            try (FileOutputStream fos = new FileOutputStream(convertFile)) {
+                fos.write(file.getBytes());
+            }
+            return Optional.of(convertFile);
+        }
+        return Optional.empty();
+    }
 
     private byte[] convert(MultipartFile file) throws IOException {
 
