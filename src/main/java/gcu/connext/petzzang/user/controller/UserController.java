@@ -11,13 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import reactor.core.publisher.Mono;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 @RestController
 @ResponseBody
-@RequestMapping("/api")
+@RequestMapping(value="/api", method = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT})
 public class UserController {
 
     private static final Logger log = LoggerFactory.getLogger(PetzzangApplication.class);
@@ -57,19 +59,17 @@ public class UserController {
         return ResponseEntity.ok().body(user);
     }
     @PutMapping("/profile")
-    public ResponseEntity<Object> putUserProfile(HttpServletRequest request) { //(1)
+    public ResponseEntity<Object> putUserProfile(MultipartHttpServletRequest request) { //(1)
 
 
         //(2)
 
         try {
-            userService.uploadImg(request);
+            Mono<String> result = userService.uploadImg(request);
+            return ResponseEntity.ok().body(result);
         }
         catch (IOException ex){
-
+            return ResponseEntity.ok().body(ex);
         }
-
-        //(3)
-        return ResponseEntity.ok().body("of");
     }
 }

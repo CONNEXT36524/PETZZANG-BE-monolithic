@@ -1,6 +1,7 @@
 package gcu.connext.petzzang.ranking.ranking.dto;
 
 
+import gcu.connext.petzzang.community.entity.Post;
 import gcu.connext.petzzang.ranking.entity.Monthly_ranking_tb;
 import gcu.connext.petzzang.ranking.entity.Weekly_ranking_entity;
 import lombok.Getter;
@@ -8,12 +9,12 @@ import lombok.Getter;
 @Getter
 public class weeklyresponsedto {
     private String week_ranking;
-    private Long first_post_id;
-    private Long second_post_id;
-    private Long third_post_id;
-    private Long fourth_post_id;
-    private Long fifth_post_id;
-    private Long sixth_post_id;
+    private Post first_post_id;
+    private Post second_post_id;
+    private Post third_post_id;
+    private Post fourth_post_id;
+    private Post fifth_post_id;
+    private Post sixth_post_id;
 
     public weeklyresponsedto(Weekly_ranking_entity entity){
         this.week_ranking= entity.getWeek_ranking();

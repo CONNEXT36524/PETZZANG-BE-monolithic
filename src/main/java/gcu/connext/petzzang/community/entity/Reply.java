@@ -44,7 +44,7 @@ public class Reply {
     private String content;
 
     @Column(name = "is_deleted")
-    private Boolean isDeleted;
+    private boolean isDeleted;
 
     @Column(name = "create_time")
     @CreatedDate

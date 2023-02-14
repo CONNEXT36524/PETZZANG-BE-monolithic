@@ -15,4 +15,34 @@ public class PostService {
     public Post downloadPost(Integer postId) {
         return postRepository.findByPostId(Long.valueOf(postId));
     }
+
+    //게시글 삭제하기
+    public String deletePost(Integer postId) {
+        postRepository.deleteByPostId(Long.valueOf(postId));
+        return ("succes");
+    }
+
+
+    public Post plusLikeNum(Long postId) {
+        Post posts = postRepository.findByPostId(Long.valueOf(postId));
+        Long likeNum = posts.getLikeNum();
+        postRepository.updateLikeNum(postId, likeNum + 1);
+        return postRepository.findByPostId(Long.valueOf(postId));
+    }
+    public Post minusLikeNum(Long postId) {
+
+        Post posts = postRepository.findByPostId(Long.valueOf(postId));
+        Long likeNum = posts.getLikeNum();
+        postRepository.updateLikeNum(postId, likeNum - 1);
+        return postRepository.findByPostId(Long.valueOf(postId));
+    }
+
+    public Post updateView(Long postId) {
+
+        Post posts = postRepository.findByPostId(Long.valueOf(postId));
+        Long view = posts.getViews();
+        postRepository.updateView(postId, view + 1);
+        return postRepository.findByPostId(Long.valueOf(postId));
+    }
+
 }

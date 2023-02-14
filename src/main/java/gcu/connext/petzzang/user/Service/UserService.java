@@ -9,22 +9,31 @@ import gcu.connext.petzzang.user.dto.KakaoProfile;
 import gcu.connext.petzzang.user.dto.OauthToken;
 import gcu.connext.petzzang.user.entity.User;
 import gcu.connext.petzzang.user.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.*;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Blob;
+import java.util.Base64;
 import java.util.Date;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class UserService {
 
@@ -154,35 +163,66 @@ public class UserService {
     }
 
     //kic object storage 사진 업로드
-    public ResponseEntity  uploadImg(HttpServletRequest request) throws IOException{
-        String multipartFile = (String) request.getAttribute("data");
+    public Mono<String>  uploadImg(MultipartHttpServletRequest request) throws IOException{
 
-//        File uploadFile = convert(multipartFile).orElseThrow(() -> new IllegalArgumentException("MultipartFile -> File 전환 실패"));
+        MultipartFile multpartFile = (MultipartFile) request.getFile("img");
+//        String contentType = request.getContentType();
+        File uploadFile1 = fileconvert(multpartFile).orElseThrow(() -> new IllegalArgumentException("MultipartFile -> File fail"));
+        byte[] uploadFile2 = convert(multpartFile);
+//        InputStream asdf = multpartFile.getInputStream();
 
-        RestTemplate rt = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("X-Auth-Token", "gAAAAABj4F18fgzQAEGppTkAceBxc0bn9wwgEl_La_X8Sx4kzOK2UBplGPsSTlidH6EAEIKgVvkZljcKSau7Rknu32bi_YPC974K3LVJvhC3HJoxIyCQAHNelVrfi0UgUXmQlTgmkveez4Qjx-L7U51Ho7HCWU2NxZwlF5-pfPJq4C10wsdqeIOX8C_aasWp5NIQTyE9_DE6" ); //(1-4)
+//        RestTemplate rt = new RestTemplate();
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.add("X-Auth-Token", "gAAAAABj4uyNfvgl2lPl8e2Q7MEqsS51prENB5MmF2f0yNb4iaN7LjiltwOnc_kdsO2RPOG6siqcwtaVJq_GSfa5pi0Dc_vBI6I8j9_d62MZV-8__kfoYP2GWBjK-9jULCtBeghD0tEAiw4oIbdWI_DUSyt7dmP-yI9MbBt6WIPp7IjYH4HFW1NJ8cU4lo4fQrDq9G1IkDm9" ); //(1-4)
+//        headers.setContentType(MediaType.IMAGE_PNG);
+//        headers.set("Content-Type", "image/png");
+//
+//        log.info(contentType);
+//
+//
+//        MultiValueMap<String, byte[]> params = new LinkedMultiValueMap<>();
+//        params.add("Content", uploadFile);
+//
+//        //(1-5)
+//        HttpEntity<MultiValueMap<String, byte[]>>  imgUploadRequest =
+//                new HttpEntity<>(params, headers);
+//
+//        //(1-6)
+//        // Http 요청 (POST 방식) 후, response 변수에 응답을 받음
+//        ResponseEntity<String> imgResponse = rt.exchange(
+//                "https://objectstorage.kr-central-1.kakaoi.io/v1/cbfb40eb783145cbbc2fec56fd713fd3/pz-os/thumbnail/test.png",
+//                HttpMethod.PUT,
+//                imgUploadRequest,
+//                String.class
+//        );
+//        removeNewFile(uploadFile);
 
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("Content", multipartFile);
+        WebClient webClient = WebClient.builder()
+                .defaultHeader("X-Auth-Token", "gAAAAABj5asWzIDyUabjJHcFt0XtONghDo7TOa7YaZUvNHHgmCpTy8eR1wuo7HWzL_wMGyHU8QmqPKroh1uOhK0aRwg5t_U6up7i4RyrmiXWOkgwamkr-DzpqaJRlR4flVuPThdT_ny2DMTsROQSRV2oLvCtxqRPT7Kqi2__HZtobdqDz3MCIbRSwh1P5NfpCgo_-rj2EC7U")
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.IMAGE_PNG_VALUE)
+                .build();
 
-        //(1-5)
-        HttpEntity<?> imgUploadRequest =
-                new HttpEntity<>(params, headers);
 
-        //(1-6)
-        // Http 요청 (POST 방식) 후, response 변수에 응답을 받음
-        ResponseEntity<String> imgResponse = rt.exchange(
-                "https://objectstorage.kr-central-1.kakaoi.io/v1/cbfb40eb783145cbbc2fec56fd713fd3/pz-os/thumbnail/test.png",
-                HttpMethod.PUT,
-                imgUploadRequest,
-                String.class
-        );
+        Mono<String> result = webClient.put()
+                .uri("https://objectstorage.kr-central-1.kakaoi.io/v1/cbfb40eb783145cbbc2fec56fd713fd3/pz-os/thumbnail/test3.png")
+                .bodyValue(uploadFile1)
+                .retrieve()
+                .onStatus(
+                        httpStatus -> httpStatus != HttpStatus.OK,
+                        clientResponse -> {
+                            return clientResponse.createException()
+                                    .flatMap(it -> Mono.error(new RuntimeException("code : " + clientResponse.statusCode())));
+                        })
+                .bodyToMono(String.class)
+                .onErrorResume(throwable -> {
+                    return Mono.error(new RuntimeException(throwable));
+                });
 
-        return new ResponseEntity(imgResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+
+        return result;
 
     }
-//    public String upload (File uploadFile, String dirName){
+    //    public String upload (File uploadFile, String dirName){
 //        String fileName = dirName + "/" + uploadFile.getName();
 //        String uploadImageUrl = putS3(uploadFile, fileName);
 //
@@ -201,7 +241,14 @@ public class UserService {
     {
 
     }
-    private Optional<File> convert(MultipartFile file) throws IOException {
+    private void removeNewFile(File targetFile) {
+        if(targetFile.delete()) {
+            log.info("delete success");
+        }else {
+            log.info("delete fail");
+        }
+    }
+    private Optional<File> fileconvert(MultipartFile file) throws IOException {
         File convertFile = new File(file.getOriginalFilename());
         if (convertFile.createNewFile()) {
             try (FileOutputStream fos = new FileOutputStream(convertFile)) {
@@ -210,5 +257,14 @@ public class UserService {
             return Optional.of(convertFile);
         }
         return Optional.empty();
+    }
+
+    private byte[] convert(MultipartFile file) throws IOException {
+
+        Base64.Encoder encoder = Base64.getEncoder();
+        byte[] photoEncode = encoder.encode(file.getBytes());
+        String photoImg = new String(photoEncode, "UTF8");
+
+        return photoEncode;
     }
 }
