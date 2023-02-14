@@ -21,6 +21,10 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     //postId로 게시글 불러오기
     Post findByPostId(Long postId);
 
+    //postId로 게시글 삭제하기
+    @Transactional
+    void deleteByPostId(Long postId);
+
     Post findByBoardType(Long boardType);
 
     @Query(value = "select * from posts_tb where DATE(create_time)>=DATE_SUB(NOW(),INTERVAL (DAYOFWEEK(NOW())) DAY) ORDER BY views DESC", nativeQuery = true)
@@ -36,5 +40,5 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @Transactional
     @Modifying
     @Query(value= "UPDATE posts_tb p SET p.views = :view WHERE p.post_id = :postId", nativeQuery = true)
-    int updateView(Long postId, Long view);
+   int updateView(Long postId, Long view);
 }

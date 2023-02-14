@@ -16,8 +16,14 @@ public class PostService {
         return postRepository.findByPostId(Long.valueOf(postId));
     }
 
-    public Post plusLikeNum(Long postId) {
+    //게시글 삭제하기
+    public String deletePost(Integer postId) {
+        postRepository.deleteByPostId(Long.valueOf(postId));
+        return ("succes");
+    }
 
+
+    public Post plusLikeNum(Long postId) {
         Post posts = postRepository.findByPostId(Long.valueOf(postId));
         Long likeNum = posts.getLikeNum();
         postRepository.updateLikeNum(postId, likeNum + 1);
