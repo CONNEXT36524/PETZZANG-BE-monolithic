@@ -20,15 +20,28 @@ public class PostController {
     private PostService postService;
 
     @GetMapping("/posts")
-    public Post getPost(@RequestParam(value="postId",required=false) Integer key
+    public Post getPost(@RequestParam(name="postId",required=false) Integer key
     ) throws Exception {
 
         Integer postId = Integer.valueOf(key);
         //save in mysql database
         postService.downloadPost(postId);
         //URI uriLocation = new URI("/board/" + board.getID());
+
         return postService.downloadPost(postId);
     }
+
+    @DeleteMapping("/posts")
+    public String deletePost(@RequestParam(name="postId",required=false) Integer key
+    ) throws Exception {
+
+        Integer postId = Integer.valueOf(key);
+        //save in mysql database
+        postService.downloadPost(postId);
+        //URI uriLocation = new URI("/board/" + board.getID());
+        return postService.deletePost(postId);
+    }
+
 
     @PostMapping("/pluslikeNum")
     @ResponseStatus(HttpStatus.OK)
