@@ -37,30 +37,25 @@ public class ReplyService {
         if (replyList.size() != 0)
         {
 
-            Collections.sort(replyList, new ReplyBundleOrderComparator());
+            Collections.sort(replyList, new ReplyBundleIdComparator());
             Long latestBundleId = replyList.get(replyList.size() -1).getBundleId();
             reply.setBundleId(latestBundleId +  1);
-            return replyRepository.save(reply);
         }
-        else {
             return replyRepository.save(reply);
-        }
     }
 
     public Reply uploadNReply(Reply reply) {
 
-        List<Reply> replyList = replyRepository.findByBundleId(Long.valueOf(reply.getBundleId()));
-        if (replyList.size() != 0)
-        {
+        Long postId = reply.getPostId();
+        Long bundleId = reply.getBundleId();
+        List<Reply> replyList = replyRepository.findByPostIdAndBundleId(postId, bundleId);
+        if (replyList.size() != 0) {
 
             Collections.sort(replyList, new ReplyBundleOrderComparator());
-            Long latestBundleOrder = replyList.get(replyList.size() -1).getBundleOrder();
+            Long latestBundleOrder = replyList.get(replyList.size() - 1).getBundleOrder();
             reply.setBundleOrder(latestBundleOrder + 1);
-            return replyRepository.save(reply);
         }
-        else {
             return replyRepository.save(reply);
-        }
 
     }
 
