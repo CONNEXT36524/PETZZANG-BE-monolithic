@@ -1,13 +1,18 @@
 package gcu.connext.petzzang.community.service;
 
+import com.nimbusds.oauth2.sdk.util.date.SimpleDate;
+import gcu.connext.petzzang.community.entity.Post;
 import gcu.connext.petzzang.community.entity.Reply;
 import gcu.connext.petzzang.community.repository.ReplyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -20,14 +25,14 @@ public class ReplyService {
     @Transactional
     public List<Reply> getReply(Integer postId) {
         List<Reply> replyList = replyRepository.findByPostId(Long.valueOf(postId));
-
+        Collections.sort(replyList, new ReplyIdComparator());
         return replyList;
     }
 
     @Transactional
     public List<Reply> getNReply(Integer postId, Integer bundleId) {
         List<Reply> replyList = replyRepository.findByPostIdAndBundleId(Long.valueOf(postId), Long.valueOf(bundleId));
-        System.out.println("replylist--" + replyList);
+        Collections.sort(replyList, new ReplyIdComparator());
         return replyList;
     }
 
@@ -36,32 +41,45 @@ public class ReplyService {
         List<Reply> replyList = replyRepository.findByPostId(Long.valueOf(reply.getPostId()));
         if (replyList.size() != 0)
         {
-
-            Collections.sort(replyList, new ReplyBundleOrderComparator());
+            Collections.sort(replyList, new ReplyBundleIdComparator());
             Long latestBundleId = replyList.get(replyList.size() -1).getBundleId();
             reply.setBundleId(latestBundleId +  1);
-            return replyRepository.save(reply);
         }
-        else {
             return replyRepository.save(reply);
-        }
     }
 
     public Reply uploadNReply(Reply reply) {
 
-        List<Reply> replyList = replyRepository.findByBundleId(Long.valueOf(reply.getBundleId()));
+        Long postId = reply.getPostId();
+        Long bundleId = reply.getBundleId();
+        List<Reply> replyList = replyRepository.findByPostIdAndBundleId(postId, bundleId);
         if (replyList.size() != 0)
         {
-
             Collections.sort(replyList, new ReplyBundleOrderComparator());
-            Long latestBundleOrder = replyList.get(replyList.size() -1).getBundleOrder();
+            Long latestBundleOrder = replyList.get(replyList.size() - 1).getBundleOrder();
             reply.setBundleOrder(latestBundleOrder + 1);
-            return replyRepository.save(reply);
         }
-        else {
             return replyRepository.save(reply);
-        }
 
+    }
+
+    public int deleteReply(Long replyId) {
+
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyy-MM-dd hh:mm:ss");
+        return replyRepository.isDeleted(replyId, true, sdf.format(timestamp));
+    }
+
+    class ReplyIdComparator implements Comparator<Reply> {
+        @Override
+        public int compare(Reply r1, Reply r2) {
+            if (r1.getReplyId() > r2.getReplyId()) {
+                return 1;
+            } else if (r1.getReplyId() < r2.getReplyId()) {
+                return -1;
+            }
+            return 0;
+        }
     }
 
     class ReplyBundleIdComparator implements Comparator<Reply> {
