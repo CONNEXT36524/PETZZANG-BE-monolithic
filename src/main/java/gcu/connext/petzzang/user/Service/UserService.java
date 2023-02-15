@@ -6,9 +6,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gcu.connext.petzzang.user.config.jwt.JwtProperties;
 import gcu.connext.petzzang.user.dto.KakaoProfile;
+import gcu.connext.petzzang.user.dto.Mypost;
 import gcu.connext.petzzang.user.dto.OauthToken;
 import gcu.connext.petzzang.user.entity.User;
+import gcu.connext.petzzang.user.repository.MypostRepository;
 import gcu.connext.petzzang.user.repository.UserRepository;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
@@ -31,6 +34,7 @@ import java.io.InputStream;
 import java.sql.Blob;
 import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -39,6 +43,9 @@ public class UserService {
 
     @Autowired
     UserRepository userRepository; //(1)
+
+    @Autowired
+    MypostRepository mypostRepository;
 
     public OauthToken getAccessToken(String code) {
 
@@ -51,6 +58,8 @@ public class UserService {
 
         //(4)
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+
+
         params.add("grant_type", "authorization_code");
         params.add("client_id","ca40c9bbb798dcd72cc61aac397e894a");
         params.add("redirect_uri", "http://localhost:3000/oauth/callback/kakao");
@@ -162,6 +171,17 @@ public class UserService {
         return user;
     }
 
+    public List<Mypost> getMyposts(HttpServletRequest request) { //(1)
+        //(2) 해당 request에는 jwtRequestFilter를 거쳐 인증이 완료된 사용자의 userCode가 요소로 추가되어 있음
+        Long userCode = (Long) request.getAttribute("userCode");
+        System.out.println("#################usercode#############"+userCode);
+        //(3) 가져온 userCode로 DB에서 사용자 정보를 가져와 user객체에 담는다
+        List<Mypost> mypost = mypostRepository.findByUserCode(userCode);
+
+        //(4) user객체 반환
+        return mypost;
+    }
+
     //kic object storage 사진 업로드
     public Mono<String>  uploadImg(MultipartHttpServletRequest request) throws IOException{
 
@@ -267,4 +287,6 @@ public class UserService {
 
         return photoEncode;
     }
+
+
 }

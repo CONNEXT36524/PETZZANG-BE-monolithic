@@ -3,6 +3,7 @@ package gcu.connext.petzzang.user.controller;
 import gcu.connext.petzzang.PetzzangApplication;
 import gcu.connext.petzzang.user.Service.UserService;
 import gcu.connext.petzzang.user.config.jwt.JwtProperties;
+import gcu.connext.petzzang.user.dto.Mypost;
 import gcu.connext.petzzang.user.dto.OauthToken;
 import gcu.connext.petzzang.user.entity.User;
 import org.slf4j.Logger;
@@ -16,6 +17,7 @@ import reactor.core.publisher.Mono;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @ResponseBody
@@ -61,9 +63,7 @@ public class UserController {
     @PutMapping("/profile")
     public ResponseEntity<Object> putUserProfile(MultipartHttpServletRequest request) { //(1)
 
-
         //(2)
-
         try {
             Mono<String> result = userService.uploadImg(request);
             return ResponseEntity.ok().body(result);
@@ -71,5 +71,14 @@ public class UserController {
         catch (IOException ex){
             return ResponseEntity.ok().body(ex);
         }
+    }
+    @GetMapping("/me/posts")
+    public ResponseEntity<Object> getMyposts(HttpServletRequest request) { //(1)
+
+        //(2)
+        List<Mypost> mypost = userService.getMyposts(request);
+
+        //(3)
+        return ResponseEntity.ok().body(mypost);
     }
 }
