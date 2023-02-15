@@ -32,6 +32,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query(value = "select * from posts_tb where month(create_time)=month(NOW()) ORDER BY views DESC", nativeQuery = true)
     public List<Post> findmonthdate();
+
     @Transactional
     @Modifying
     @Query(value= "UPDATE posts_tb p SET p.likenum = :likeNum WHERE p.post_id = :postId", nativeQuery = true)

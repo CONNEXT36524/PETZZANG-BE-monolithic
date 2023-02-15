@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 public class ReplyController {
 
     @Autowired
-    private ReplyService ReplyService;
+    private ReplyService replyService;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -30,7 +30,7 @@ public class ReplyController {
 
         Integer postId = Integer.valueOf(postIdKey);
 
-        return ReplyService.getReply(postId);
+        return replyService.getReply(postId);
     }
     @GetMapping("/get-nreplies")
     public List<Reply> getNReplies(@RequestParam(value="postId",required=false) Integer postIdKey,
@@ -41,7 +41,7 @@ public class ReplyController {
         Integer bundleId = Integer.valueOf(bundleIdKey);
         System.out.println("postIdKey--" +postIdKey);
         System.out.println("bundleIdKey--" + bundleIdKey);
-        return ReplyService.getNReply(postId, bundleId);
+        return replyService.getNReply(postId, bundleId);
     }
 
     @PostMapping("/post-replies")
@@ -54,7 +54,7 @@ public class ReplyController {
         Reply reply = modelMapper.map(replyDTO, Reply.class);
 
 
-        return ReplyService.uploadReply(reply);
+        return replyService.uploadReply(reply);
     }
 
     @PostMapping("/post-nreplies")
@@ -66,7 +66,17 @@ public class ReplyController {
         //DTO to Entity
         Reply reply = modelMapper.map(replyDTO, Reply.class);
 
-        return ReplyService.uploadNReply(reply);
+        return replyService.uploadNReply(reply);
+    }
+
+    @DeleteMapping("/delete-replies")
+    public int deleteReply(@RequestParam(name="replyId") Integer key
+    ) throws Exception {
+
+        Long replyId = Long.valueOf(key);
+
+        //URI uriLocation = new URI("/board/" + board.getID());
+        return replyService.deleteReply(replyId);
     }
 
 }

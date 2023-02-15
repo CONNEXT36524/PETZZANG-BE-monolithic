@@ -19,7 +19,7 @@ public class PostService {
     //게시글 삭제하기
     public String deletePost(Integer postId) {
         postRepository.deleteByPostId(Long.valueOf(postId));
-        return ("succes");
+        return ("success");
     }
 
 
