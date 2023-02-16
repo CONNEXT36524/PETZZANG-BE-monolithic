@@ -1,6 +1,14 @@
+FROM adoptopenjdk/openjdk11 as builder
+
+COPY gradlew .
+COPY gradle gradle
+COPY build.gradle .
+COPY settings.gradle .
+COPY src src
+RUN chmod +x ./gradlew
+RUN ./gradlew bootJar
+
 FROM adoptopenjdk/openjdk11
-ENV APP_HOME=/usr/app/
-WORKDIR $APP_HOME
-COPY build/libs/*.jar application.jar
+COPY --from=builder build/libs/*.jar app.jar
+ENTRYPOINT ["java","-jar","-Dspring.profiles.active=prod","/app.jar"]
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=prod", "application.jar"]
