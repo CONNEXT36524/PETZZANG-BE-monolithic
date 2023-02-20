@@ -9,14 +9,15 @@ import gcu.connext.petzzang.user.entity.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import reactor.core.publisher.Mono;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.Base64;
 import java.util.List;
 
 @RestController
@@ -60,18 +61,29 @@ public class UserController {
         //(3)
         return ResponseEntity.ok().body(user);
     }
-    @PutMapping("/profile")
-    public ResponseEntity<Object> putUserProfile(MultipartHttpServletRequest request) { //(1)
 
-        //(2)
-        try {
-            Mono<String> result = userService.uploadImg(request);
-            return ResponseEntity.ok().body(result);
-        }
-        catch (IOException ex){
-            return ResponseEntity.ok().body(ex);
-        }
+    @PutMapping("/profile")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<byte[]> putUserProfile( @RequestParam(name="imgName") String imgName, @RequestParam(name="uploadImg") String uploadImg
+    ) throws Exception {
+
+        RestTemplate rt = new RestTemplate();
+
+        String keyBase64 = uploadImg.substring(22);
+        byte[] decodedBytes = Base64.getMimeDecoder().decode(keyBase64);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("X-Auth-Token", "gAAAAABj8zRkjwE8VgjV8SwV1xTEYXcSaPV1e0JDbtbfnVOO2uefshABe_9yg-PlFQaBZ_r42Y-kDeb3VCFvN8Y2-ppdmNSUE1RZ7dYBlWXNmG9mux5SBGWYqI1ZirHECUPj7CtnvUIMpIUIdLBNB9iB72DyyMDUFZPMkd5JsHInpao4tfOMkal9RfwmJq-bpp5fQS54KBNo");
+        headers.add("Content-Type", "image/png");
+
+        HttpEntity<byte[]> entity = new HttpEntity<>(decodedBytes, headers);
+
+        String url = "https://objectstorage.kr-central-1.kakaoi.io/v1/cbfb40eb783145cbbc2fec56fd713fd3/pz-os/thumbnail/"+imgName;
+
+        return rt.exchange(url, HttpMethod.PUT, entity, byte[].class);
+
     }
+
     @GetMapping("/me/posts")
     public ResponseEntity<Object> getMyposts(HttpServletRequest request) { //(1)
 
