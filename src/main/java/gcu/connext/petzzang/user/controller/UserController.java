@@ -93,4 +93,33 @@ public class UserController {
         //(3)
         return ResponseEntity.ok().body(mypost);
     }
+
+
+    @PutMapping("/get/profile")
+    public ResponseEntity<Object> getUserProfile(@RequestParam String imgName) { //(1)
+        System.out.println(imgName);
+
+        try {
+            // RestTemplate 객체를 생성합니다.
+            RestTemplate restTemplate = new RestTemplate();
+
+            // header 설정을 위해 HttpHeader 클래스를 생성한 후 HttpEntity 객체에 넣어줍니다.
+            HttpHeaders headers  = new HttpHeaders(); // 담아줄 header
+            headers.add("X-Auth-Token", "gAAAAABj8zRkjwE8VgjV8SwV1xTEYXcSaPV1e0JDbtbfnVOO2uefshABe_9yg-PlFQaBZ_r42Y-kDeb3VCFvN8Y2-ppdmNSUE1RZ7dYBlWXNmG9mux5SBGWYqI1ZirHECUPj7CtnvUIMpIUIdLBNB9iB72DyyMDUFZPMkd5JsHInpao4tfOMkal9RfwmJq-bpp5fQS54KBNo");
+
+            HttpEntity<String> entity = new HttpEntity<String>(headers);
+
+            // exchange() 메소드로 api를 호출합니다.
+            ResponseEntity<byte[]> response = restTemplate.exchange(
+                    "https://objectstorage.kr-central-1.kakaoi.io/v1/cbfb40eb783145cbbc2fec56fd713fd3/pz-os/thumbnail/dog2.png",
+                    HttpMethod.GET, entity, byte[].class);
+
+            return ResponseEntity.ok().body(response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.ok().body("error");
+        }// end catch
+
+    }
 }
