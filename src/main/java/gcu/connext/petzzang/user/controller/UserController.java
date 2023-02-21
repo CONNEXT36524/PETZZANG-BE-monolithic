@@ -1,11 +1,13 @@
 package gcu.connext.petzzang.user.controller;
 
 import gcu.connext.petzzang.PetzzangApplication;
+import gcu.connext.petzzang.community.repository.BoardRepository;
 import gcu.connext.petzzang.user.Service.UserService;
 import gcu.connext.petzzang.user.config.jwt.JwtProperties;
 import gcu.connext.petzzang.user.dto.Mypost;
 import gcu.connext.petzzang.user.dto.OauthToken;
 import gcu.connext.petzzang.user.entity.User;
+import gcu.connext.petzzang.user.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +27,20 @@ public class UserController {
     private static final Logger log = LoggerFactory.getLogger(PetzzangApplication.class);
     @Autowired
     private UserService userService;
+    @Autowired
+    private UserRepository userRepository;
 
+    @GetMapping("/get/username")
+    public String getUserName(@RequestParam(name="userCode") Integer userCode) {
+        System.out.println(userCode);
+
+        String userName="";
+
+        User user = userRepository.findByUserCode(Long.valueOf(userCode));
+        userName=user.getKakaonickname();
+
+        return userName;
+    }
 
     // 프론트에서 인가코드 받아오는 url
 

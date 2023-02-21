@@ -3,7 +3,6 @@ package gcu.connext.petzzang.community.controller;
 import gcu.connext.petzzang.PetzzangApplication;
 import gcu.connext.petzzang.community.entity.Post;
 import gcu.connext.petzzang.community.repository.BoardRepository;
-import gcu.connext.petzzang.community.service.BoardService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
