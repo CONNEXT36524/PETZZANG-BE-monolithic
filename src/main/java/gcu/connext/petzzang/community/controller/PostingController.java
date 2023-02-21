@@ -29,16 +29,16 @@ public class PostingController {
 
     @PostMapping("/posting")
     @ResponseStatus(HttpStatus.CREATED)
-    public Post createPosting(
+    public Post createPosting( @RequestParam(name="imgName") String imgName,
             @ModelAttribute PostDTO postDTO
     ) throws Exception {
-
-        System.out.println(postDTO.thumbnail);
+        System.out.println(imgName);
+        //System.out.println(postDTO.thumbnail);
 
         //kic object storage 주소로 변환
         String imageSource = postDTO.getThumbnail();
         String postId = String.valueOf(postDTO.getPostId());
-        String imageUrl = postingService.uploadThumbnail(postId, imageSource);
+        String imageUrl = postingService.uploadThumbnail(postId, imageSource, imgName);
         postDTO.setThumbnail(imageUrl);
 
         //DTO to Entity
@@ -48,28 +48,4 @@ public class PostingController {
         return postingService.uploadPosting(post);
     }
 
-    @PostMapping("/image")
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<byte[]> uploadImg(
-            @RequestParam(name="imgFile") String key
-    ) throws Exception {
-
-        RestTemplate rt = new RestTemplate();
-
-        String keyBase64 = key.substring(22);
-        byte[] decodedBytes = Base64.getMimeDecoder().decode(keyBase64);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("X-Auth-Token", "token");
-        headers.add("Content-Type", "image/png");
-
-        HttpEntity<byte[]> entity = new HttpEntity<>(decodedBytes, headers);
-
-        String url = "https://objectstorage.kr-central-1.kakaoi.io/"
-                    +"v1/cbfb40eb783145cbbc2fec56fd713fd3/pz-os/thumbnail/"
-                    +"real2.png";
-
-        return rt.exchange(url, HttpMethod.PUT, entity, byte[].class);
-
-    }
 }

@@ -1,6 +1,5 @@
 package gcu.connext.petzzang.community.service;
 
-import gcu.connext.petzzang.community.dto.PostDTO;
 import gcu.connext.petzzang.community.entity.Post;
 import gcu.connext.petzzang.community.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,7 @@ public class PostingService {
         return postRepository.save(post);
     }
 
-    public String uploadThumbnail(String postId, String imageSource) {
+    public String uploadThumbnail(String postId, String imageSource, String imgName) {
 
         RestTemplate rt = new RestTemplate();
 
@@ -32,16 +31,23 @@ public class PostingService {
         byte[] decodedBytes = Base64.getMimeDecoder().decode(keyBase64);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("X-Auth-Token", "token");
-        headers.add("Content-Type", "image/png");
+        headers.add("X-Auth-Token", "gAAAAABj9DqI6qIJa3Xu-fJBQY_OwjBCqXT-ppXRV8_DFcAJIhNnd8NUZfjm3xn63C1knAyc8fWykiJWOWd15LhvblUM61r_w_-nYAmXb3N9lhOVmxJWCd1GY2W0H9BQuOC4zvd16cFs-WVDAMsH_xEVyRrdncdR7msiFE_PZ8t65jjVIXWoI_9Oe9FuDVAjPIatKgwQgHi4");
+        if(imgName.contains(".png")) {
+            System.out.println("png");
+            headers.add("Content-Type", "image/png");
+        } else if(imgName.contains(".jpg")) {
+            System.out.println("jpg");
+            headers.add("Content-Type", "image/jpeg");
+        }
 
         HttpEntity<byte[]> entity = new HttpEntity<>(decodedBytes, headers);
 
         String url = "https://objectstorage.kr-central-1.kakaoi.io/"
                 +"v1/cbfb40eb783145cbbc2fec56fd713fd3/pz-os/thumbnail/"
-                +"thumbnail" + postId + ".png";
+                +imgName;
 
         ResponseEntity<byte[]> imgResposne = rt.exchange(url, HttpMethod.PUT, entity, byte[].class);
+        System.out.println(imgResposne);
 
         return url;
     }

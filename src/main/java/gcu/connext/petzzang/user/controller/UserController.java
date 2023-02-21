@@ -12,11 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
-import reactor.core.publisher.Mono;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.util.Base64;
 import java.util.List;
 
@@ -73,8 +70,14 @@ public class UserController {
         byte[] decodedBytes = Base64.getMimeDecoder().decode(keyBase64);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("X-Auth-Token", "gAAAAABj8zRkjwE8VgjV8SwV1xTEYXcSaPV1e0JDbtbfnVOO2uefshABe_9yg-PlFQaBZ_r42Y-kDeb3VCFvN8Y2-ppdmNSUE1RZ7dYBlWXNmG9mux5SBGWYqI1ZirHECUPj7CtnvUIMpIUIdLBNB9iB72DyyMDUFZPMkd5JsHInpao4tfOMkal9RfwmJq-bpp5fQS54KBNo");
-        headers.add("Content-Type", "image/png");
+        headers.add("X-Auth-Token", "gAAAAABj9ERb1ja9kfOAnLaEX6t-hwl4AwHbPW2bbLF6nZgyNSQ5oOGUDFWPP5xBZ6AAPVpK1oMt4C4-ZJFSS8qv8l5oUML7amQGRErZqDg9BoY7jwSK8rUuRfJCj5EGhqJb3wqceIRzt7U1AmwYcQ08wPKCAMLdwxTgwp71lpRmk4q5Yb9O0cDNR2CJhqUUSJUcbwTRzoMq");
+        if(imgName.contains(".png")) {
+            System.out.println("png");
+            headers.add("Content-Type", "image/png");
+        } else if(imgName.contains(".jpg")) {
+            System.out.println("jpg");
+            headers.add("Content-Type", "image/jpeg");
+        }
 
         HttpEntity<byte[]> entity = new HttpEntity<>(decodedBytes, headers);
 
@@ -105,7 +108,7 @@ public class UserController {
 
             // header 설정을 위해 HttpHeader 클래스를 생성한 후 HttpEntity 객체에 넣어줍니다.
             HttpHeaders headers  = new HttpHeaders(); // 담아줄 header
-            headers.add("X-Auth-Token", "gAAAAABj8zRkjwE8VgjV8SwV1xTEYXcSaPV1e0JDbtbfnVOO2uefshABe_9yg-PlFQaBZ_r42Y-kDeb3VCFvN8Y2-ppdmNSUE1RZ7dYBlWXNmG9mux5SBGWYqI1ZirHECUPj7CtnvUIMpIUIdLBNB9iB72DyyMDUFZPMkd5JsHInpao4tfOMkal9RfwmJq-bpp5fQS54KBNo");
+            headers.add("X-Auth-Token", "gAAAAABj9ERb1ja9kfOAnLaEX6t-hwl4AwHbPW2bbLF6nZgyNSQ5oOGUDFWPP5xBZ6AAPVpK1oMt4C4-ZJFSS8qv8l5oUML7amQGRErZqDg9BoY7jwSK8rUuRfJCj5EGhqJb3wqceIRzt7U1AmwYcQ08wPKCAMLdwxTgwp71lpRmk4q5Yb9O0cDNR2CJhqUUSJUcbwTRzoMq");
 
             HttpEntity<String> entity = new HttpEntity<String>(headers);
 
