@@ -24,21 +24,25 @@ public class PostingService {
         return postRepository.save(post);
     }
 
-    public ResponseEntity<byte[]> uploadThumbnail(String key) {
+    public String uploadThumbnail(String postId, String imageSource) {
 
         RestTemplate rt = new RestTemplate();
 
-        String keyBase64 = key.substring(22);
+        String keyBase64 = imageSource.substring(22);
         byte[] decodedBytes = Base64.getMimeDecoder().decode(keyBase64);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("X-Auth-Token", "gAAAAABj8z-LRWmmLnduDGQcTKFOH--_Rv8msEbtTLzxVIL_1MoX211bx0XbW3VjWHVMchg6i8ydGdOkfm22RVy6DYqq8BMk1E-kFypmAfU3UObwMe9USHrWkVT2VcGy-3lw29sl5WQTc_pvt-EkDDOYhL8UyxoLYsaVkywqMoBpuud8pIJgDUJLhD8iQZCujTSrKy8Tqjdu");
+        headers.add("X-Auth-Token", "token");
         headers.add("Content-Type", "image/png");
 
         HttpEntity<byte[]> entity = new HttpEntity<>(decodedBytes, headers);
 
-        String url = "https://objectstorage.kr-central-1.kakaoi.io/v1/cbfb40eb783145cbbc2fec56fd713fd3/pz-os/thumbnail/real2.png";
+        String url = "https://objectstorage.kr-central-1.kakaoi.io/"
+                +"v1/cbfb40eb783145cbbc2fec56fd713fd3/pz-os/thumbnail/"
+                +"thumbnail" + postId + ".png";
 
-        return rt.exchange(url, HttpMethod.PUT, entity, byte[].class);
+        ResponseEntity<byte[]> imgResposne = rt.exchange(url, HttpMethod.PUT, entity, byte[].class);
+
+        return url;
     }
 }

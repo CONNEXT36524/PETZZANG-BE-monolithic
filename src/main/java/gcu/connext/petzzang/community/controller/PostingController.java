@@ -35,13 +35,16 @@ public class PostingController {
 
         System.out.println(postDTO.thumbnail);
 
+        //kic object storage 주소로 변환
+        String imageSource = postDTO.getThumbnail();
+        String postId = String.valueOf(postDTO.getPostId());
+        String imageUrl = postingService.uploadThumbnail(postId, imageSource);
+        postDTO.setThumbnail(imageUrl);
 
         //DTO to Entity
         Post post = modelMapper.map(postDTO, Post.class);
 
         // save in mysql database
-        // postingService.uploadPosting(post);
-        //URI uriLocation = new URI("/board/" + board.getID());
         return postingService.uploadPosting(post);
     }
 
@@ -62,7 +65,9 @@ public class PostingController {
 
         HttpEntity<byte[]> entity = new HttpEntity<>(decodedBytes, headers);
 
-        String url = "https://objectstorage.kr-central-1.kakaoi.io/v1/cbfb40eb783145cbbc2fec56fd713fd3/pz-os/thumbnail/real2.png";
+        String url = "https://objectstorage.kr-central-1.kakaoi.io/"
+                    +"v1/cbfb40eb783145cbbc2fec56fd713fd3/pz-os/thumbnail/"
+                    +"real2.png";
 
         return rt.exchange(url, HttpMethod.PUT, entity, byte[].class);
 
