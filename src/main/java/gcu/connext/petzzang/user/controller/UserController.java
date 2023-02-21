@@ -3,19 +3,19 @@ package gcu.connext.petzzang.user.controller;
 import gcu.connext.petzzang.PetzzangApplication;
 import gcu.connext.petzzang.user.Service.UserService;
 import gcu.connext.petzzang.user.config.jwt.JwtProperties;
+import gcu.connext.petzzang.user.dto.Mypost;
 import gcu.connext.petzzang.user.dto.OauthToken;
 import gcu.connext.petzzang.user.entity.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
-import reactor.core.publisher.Mono;
+import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
+import java.util.Base64;
+import java.util.List;
 
 @RestController
 @ResponseBody
@@ -58,18 +58,71 @@ public class UserController {
         //(3)
         return ResponseEntity.ok().body(user);
     }
-    @PutMapping("/profile")
-    public ResponseEntity<Object> putUserProfile(MultipartHttpServletRequest request) { //(1)
 
+    @PutMapping("/profile")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<byte[]> putUserProfile( @RequestParam(name="imgName") String imgName, @RequestParam(name="uploadImg") String uploadImg
+    ) throws Exception {
+
+        RestTemplate rt = new RestTemplate();
+
+        String keyBase64 = uploadImg.substring(22);
+        byte[] decodedBytes = Base64.getMimeDecoder().decode(keyBase64);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("X-Auth-Token", "gAAAAABj9ERb1ja9kfOAnLaEX6t-hwl4AwHbPW2bbLF6nZgyNSQ5oOGUDFWPP5xBZ6AAPVpK1oMt4C4-ZJFSS8qv8l5oUML7amQGRErZqDg9BoY7jwSK8rUuRfJCj5EGhqJb3wqceIRzt7U1AmwYcQ08wPKCAMLdwxTgwp71lpRmk4q5Yb9O0cDNR2CJhqUUSJUcbwTRzoMq");
+        if(imgName.contains(".png")) {
+            System.out.println("png");
+            headers.add("Content-Type", "image/png");
+        } else if(imgName.contains(".jpg")) {
+            System.out.println("jpg");
+            headers.add("Content-Type", "image/jpeg");
+        }
+
+        HttpEntity<byte[]> entity = new HttpEntity<>(decodedBytes, headers);
+
+        String url = "https://objectstorage.kr-central-1.kakaoi.io/v1/cbfb40eb783145cbbc2fec56fd713fd3/pz-os/thumbnail/"+imgName;
+
+        return rt.exchange(url, HttpMethod.PUT, entity, byte[].class);
+
+    }
+
+    @GetMapping("/me/posts")
+    public ResponseEntity<Object> getMyposts(HttpServletRequest request) { //(1)
 
         //(2)
+        List<Mypost> mypost = userService.getMyposts(request);
+
+        //(3)
+        return ResponseEntity.ok().body(mypost);
+    }
+
+
+    @PutMapping("/get/profile")
+    public ResponseEntity<Object> getUserProfile(@RequestParam String imgName) { //(1)
+        System.out.println(imgName);
 
         try {
-            Mono<String> result = userService.uploadImg(request);
-            return ResponseEntity.ok().body(result);
-        }
-        catch (IOException ex){
-            return ResponseEntity.ok().body(ex);
-        }
+            // RestTemplate 객체를 생성합니다.
+            RestTemplate restTemplate = new RestTemplate();
+
+            // header 설정을 위해 HttpHeader 클래스를 생성한 후 HttpEntity 객체에 넣어줍니다.
+            HttpHeaders headers  = new HttpHeaders(); // 담아줄 header
+            headers.add("X-Auth-Token", "gAAAAABj9ERb1ja9kfOAnLaEX6t-hwl4AwHbPW2bbLF6nZgyNSQ5oOGUDFWPP5xBZ6AAPVpK1oMt4C4-ZJFSS8qv8l5oUML7amQGRErZqDg9BoY7jwSK8rUuRfJCj5EGhqJb3wqceIRzt7U1AmwYcQ08wPKCAMLdwxTgwp71lpRmk4q5Yb9O0cDNR2CJhqUUSJUcbwTRzoMq");
+
+            HttpEntity<String> entity = new HttpEntity<String>(headers);
+
+            // exchange() 메소드로 api를 호출합니다.
+            ResponseEntity<byte[]> response = restTemplate.exchange(
+                    "https://objectstorage.kr-central-1.kakaoi.io/v1/cbfb40eb783145cbbc2fec56fd713fd3/pz-os/thumbnail/dog2.png",
+                    HttpMethod.GET, entity, byte[].class);
+
+            return ResponseEntity.ok().body(response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.ok().body("error");
+        }// end catch
+
     }
 }
