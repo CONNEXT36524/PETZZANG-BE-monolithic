@@ -59,6 +59,7 @@ public class UserController {
         return ResponseEntity.ok().body(user);
     }
 
+    //이미지만 변경
     @PutMapping("/profile")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<byte[]> putUserProfile( @RequestParam(name="imgName") String imgName, @RequestParam(name="uploadImg") String uploadImg
@@ -84,9 +85,35 @@ public class UserController {
         String url = "https://objectstorage.kr-central-1.kakaoi.io/v1/cbfb40eb783145cbbc2fec56fd713fd3/pz-os/thumbnail/"+imgName;
 
         return rt.exchange(url, HttpMethod.PUT, entity, byte[].class);
-
     }
 
+    //이미지+닉네임 변경
+    @PutMapping("/updateProfile")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<byte[]> putUserProfile( @RequestParam(name="imgName") String imgName, @RequestParam(name="uploadImg") String uploadImg, @RequestParam(name="nameChg") String nameChg
+    ) throws Exception {
+
+        RestTemplate rt = new RestTemplate();
+
+        String keyBase64 = uploadImg.substring(22);
+        byte[] decodedBytes = Base64.getMimeDecoder().decode(keyBase64);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("X-Auth-Token", "gAAAAABj9ERb1ja9kfOAnLaEX6t-hwl4AwHbPW2bbLF6nZgyNSQ5oOGUDFWPP5xBZ6AAPVpK1oMt4C4-ZJFSS8qv8l5oUML7amQGRErZqDg9BoY7jwSK8rUuRfJCj5EGhqJb3wqceIRzt7U1AmwYcQ08wPKCAMLdwxTgwp71lpRmk4q5Yb9O0cDNR2CJhqUUSJUcbwTRzoMq");
+        if(imgName.contains(".png")) {
+            System.out.println("png");
+            headers.add("Content-Type", "image/png");
+        } else if(imgName.contains(".jpg")) {
+            System.out.println("jpg");
+            headers.add("Content-Type", "image/jpeg");
+        }
+
+        HttpEntity<byte[]> entity = new HttpEntity<>(decodedBytes, headers);
+
+        String url = "https://objectstorage.kr-central-1.kakaoi.io/v1/cbfb40eb783145cbbc2fec56fd713fd3/pz-os/thumbnail/"+imgName;
+
+        return rt.exchange(url, HttpMethod.PUT, entity, byte[].class);
+    }
     @GetMapping("/me/posts")
     public ResponseEntity<Object> getMyposts(HttpServletRequest request) { //(1)
 
@@ -97,32 +124,20 @@ public class UserController {
         return ResponseEntity.ok().body(mypost);
     }
 
-
-    @PutMapping("/get/profile")
-    public ResponseEntity<Object> getUserProfile(@RequestParam String imgName) { //(1)
-        System.out.println(imgName);
-
-        try {
-            // RestTemplate 객체를 생성합니다.
-            RestTemplate restTemplate = new RestTemplate();
-
-            // header 설정을 위해 HttpHeader 클래스를 생성한 후 HttpEntity 객체에 넣어줍니다.
-            HttpHeaders headers  = new HttpHeaders(); // 담아줄 header
-            headers.add("X-Auth-Token", "gAAAAABj9ERb1ja9kfOAnLaEX6t-hwl4AwHbPW2bbLF6nZgyNSQ5oOGUDFWPP5xBZ6AAPVpK1oMt4C4-ZJFSS8qv8l5oUML7amQGRErZqDg9BoY7jwSK8rUuRfJCj5EGhqJb3wqceIRzt7U1AmwYcQ08wPKCAMLdwxTgwp71lpRmk4q5Yb9O0cDNR2CJhqUUSJUcbwTRzoMq");
-
-            HttpEntity<String> entity = new HttpEntity<String>(headers);
-
-            // exchange() 메소드로 api를 호출합니다.
-            ResponseEntity<byte[]> response = restTemplate.exchange(
-                    "https://objectstorage.kr-central-1.kakaoi.io/v1/cbfb40eb783145cbbc2fec56fd713fd3/pz-os/thumbnail/dog2.png",
-                    HttpMethod.GET, entity, byte[].class);
-
-            return ResponseEntity.ok().body(response);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.ok().body("error");
-        }// end catch
-
+    //중복확인
+    @PutMapping("/duplicationcheck")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<Boolean> dupleCheck(@RequestParam String name)
+    {
+        return ResponseEntity.ok(userService.checkNicknameDuplicate(name));
     }
+
+    @PostMapping("/updateNickname")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<String> updateProfile(HttpServletRequest request, @RequestParam String name)
+    {
+        log.info("hi");
+        return ResponseEntity.ok(userService.updateNickname(request, name));
+    }
+
 }

@@ -220,5 +220,21 @@ public class UserService {
         return photoEncode;
     }
 
+    public boolean checkNicknameDuplicate(String nickname)
+    {
+        return userRepository.existsBykakaoNickname(nickname);
+    }
 
+    public String updateNickname(HttpServletRequest request, String name)
+    {
+        Long userCode = (Long) request.getAttribute("userCode");
+
+        User user = userRepository.findByUserCode(userCode);
+        User updateUser = null;
+        updateUser.builder().kakaoId(user.getKakaoid()).userRole(user.getUserrole()).kakaoNickname(name).kakaoEmail(user.getKakaoemail()).kakaoProfileImg(user.getKakaoprofileimg()).build();
+        userRepository.save(updateUser);
+
+        return user.getKakaonickname();
+
+    }
 }
