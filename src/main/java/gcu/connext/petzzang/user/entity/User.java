@@ -89,5 +89,14 @@ public class User {
         this.userRole = userRole;
     }
 
+    public void update(Long kakaoId, String kakaoProfileImg, String kakaoNickname,
+                String kakaoEmail, String userRole) {
+
+        this.kakaoId = kakaoId;
+        this.kakaoProfileImg = kakaoProfileImg;
+        this.kakaoNickname = kakaoNickname;
+        this.kakaoEmail = kakaoEmail;
+        this.userRole = userRole;
+    }
 
 }

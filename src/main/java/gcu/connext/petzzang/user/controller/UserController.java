@@ -1,13 +1,18 @@
 package gcu.connext.petzzang.user.controller;
 
 import gcu.connext.petzzang.PetzzangApplication;
+import gcu.connext.petzzang.community.dto.PostDTO;
+import gcu.connext.petzzang.community.entity.Post;
 import gcu.connext.petzzang.community.repository.BoardRepository;
+import gcu.connext.petzzang.community.service.PostingService;
 import gcu.connext.petzzang.user.Service.UserService;
 import gcu.connext.petzzang.user.config.jwt.JwtProperties;
 import gcu.connext.petzzang.user.dto.Mypost;
 import gcu.connext.petzzang.user.dto.OauthToken;
+import gcu.connext.petzzang.user.dto.UpdateDTO;
 import gcu.connext.petzzang.user.entity.User;
 import gcu.connext.petzzang.user.repository.UserRepository;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +36,12 @@ public class UserController {
     private UserService userService;
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PostingService postingService;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     @GetMapping("/get/username")
     public String getUserName(@RequestParam(name="userCode") String userCode) {
@@ -87,60 +98,7 @@ public class UserController {
     }
 
     //이미지만 변경
-    @PutMapping("/profile")
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<byte[]> putUserProfile( @RequestParam(name="imgName") String imgName, @RequestParam(name="uploadImg") String uploadImg
-    ) throws Exception {
 
-        RestTemplate rt = new RestTemplate();
-
-        String keyBase64 = uploadImg.substring(22);
-        byte[] decodedBytes = Base64.getMimeDecoder().decode(keyBase64);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("X-Auth-Token", "gAAAAABj9XzFg3mWBnPRj2umh8SLYZwYb1kDhJ-SFTXU28j3bRBw1PTHQmM3mi35S2VXWrlfxk6EFyRe6f7l6aFIQArv96yTMtLEdkLGbrZqGULHaAedr55lUsoBBiK0qLCV3E5TRUzh_lupK1taJ2dhlwljq4_z9ILAtRWq9jmP5dOugzHwv-C0KPxrTweH5V_fz_KgIIXY");
-        if(imgName.contains(".png")) {
-            System.out.println("png");
-            headers.add("Content-Type", "image/png");
-        } else if(imgName.contains(".jpg")) {
-            System.out.println("jpg");
-            headers.add("Content-Type", "image/jpeg");
-        }
-
-        HttpEntity<byte[]> entity = new HttpEntity<>(decodedBytes, headers);
-
-        String url = "https://objectstorage.kr-central-1.kakaoi.io/v1/cbfb40eb783145cbbc2fec56fd713fd3/pz-os/thumbnail/"+imgName;
-
-        return rt.exchange(url, HttpMethod.PUT, entity, byte[].class);
-    }
-
-    //이미지+닉네임 변경
-    @PutMapping("/updateProfile")
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<byte[]> putUserProfile( @RequestParam(name="imgName") String imgName, @RequestParam(name="uploadImg") String uploadImg, @RequestParam(name="nameChg") String nameChg
-    ) throws Exception {
-
-        RestTemplate rt = new RestTemplate();
-
-        String keyBase64 = uploadImg.substring(22);
-        byte[] decodedBytes = Base64.getMimeDecoder().decode(keyBase64);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("X-Auth-Token", "gAAAAABj9ERb1ja9kfOAnLaEX6t-hwl4AwHbPW2bbLF6nZgyNSQ5oOGUDFWPP5xBZ6AAPVpK1oMt4C4-ZJFSS8qv8l5oUML7amQGRErZqDg9BoY7jwSK8rUuRfJCj5EGhqJb3wqceIRzt7U1AmwYcQ08wPKCAMLdwxTgwp71lpRmk4q5Yb9O0cDNR2CJhqUUSJUcbwTRzoMq");
-        if(imgName.contains(".png")) {
-            System.out.println("png");
-            headers.add("Content-Type", "image/png");
-        } else if(imgName.contains(".jpg")) {
-            System.out.println("jpg");
-            headers.add("Content-Type", "image/jpeg");
-        }
-
-        HttpEntity<byte[]> entity = new HttpEntity<>(decodedBytes, headers);
-
-        String url = "https://objectstorage.kr-central-1.kakaoi.io/v1/cbfb40eb783145cbbc2fec56fd713fd3/pz-os/thumbnail/"+imgName;
-
-        return rt.exchange(url, HttpMethod.PUT, entity, byte[].class);
-    }
     @GetMapping("/me/posts")
     public ResponseEntity<Object> getMyposts(HttpServletRequest request) { //(1)
 
@@ -151,7 +109,6 @@ public class UserController {
         return ResponseEntity.ok().body(mypost);
     }
 
-
     //중복확인
     @PutMapping("/duplicationcheck")
     @ResponseStatus(HttpStatus.CREATED)
@@ -159,40 +116,41 @@ public class UserController {
         return ResponseEntity.ok(userService.checkNicknameDuplicate(name));
     }
 
-    @PutMapping("/get/profile")
-    public ResponseEntity<Object> getUserProfile(@RequestParam String imgName) { //(1)
-        System.out.println(imgName);
 
-        try {
-            // RestTemplate 객체를 생성합니다.
-            RestTemplate restTemplate = new RestTemplate();
-
-            // header 설정을 위해 HttpHeader 클래스를 생성한 후 HttpEntity 객체에 넣어줍니다.
-            HttpHeaders headers  = new HttpHeaders(); // 담아줄 header
-            headers.add("X-Auth-Token", "gAAAAABj9XzFg3mWBnPRj2umh8SLYZwYb1kDhJ-SFTXU28j3bRBw1PTHQmM3mi35S2VXWrlfxk6EFyRe6f7l6aFIQArv96yTMtLEdkLGbrZqGULHaAedr55lUsoBBiK0qLCV3E5TRUzh_lupK1taJ2dhlwljq4_z9ILAtRWq9jmP5dOugzHwv-C0KPxrTweH5V_fz_KgIIXY");
-
-            HttpEntity<String> entity = new HttpEntity<String>(headers);
-
-            // exchange() 메소드로 api를 호출합니다.
-            ResponseEntity<byte[]> response = restTemplate.exchange(
-                    "https://objectstorage.kr-central-1.kakaoi.io/v1/cbfb40eb783145cbbc2fec56fd713fd3/pz-os/thumbnail/dog2.png",
-                    HttpMethod.GET, entity, byte[].class);
-
-            return ResponseEntity.ok().body(response);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.ok().body("error");
-        }// end catch
-
-    }
-
-    @PostMapping("/updateNickname")
+    @GetMapping("/updateNickname")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<String> updateProfile(HttpServletRequest request, @RequestParam String name)
+    public ResponseEntity<String> updateNickname(HttpServletRequest request, @RequestParam String name)
     {
-        log.info("hi");
+        System.out.println("이름변경");
         return ResponseEntity.ok(userService.updateNickname(request, name));
     }
 
+    @GetMapping("/updateImg")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<String> updateImg(HttpServletRequest request,@RequestParam(name = "imgName") String imgName, @ModelAttribute UpdateDTO updateDTO
+    ) throws Exception {
+        String uploadImg = updateDTO.getUploadImg();
+
+
+        //kic object storage 주소로 변환
+        String imgUrl = userService.uploadImg(uploadImg, imgName);
+        System.out.println(imgUrl);
+        // save in mysql database
+        return ResponseEntity.ok(userService.updateImg(request, imgUrl));
+    }
+
+    @GetMapping("/updateProfile")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<byte[]> updateProfile(HttpServletRequest request, @ModelAttribute UpdateDTO updateDTO, @RequestParam(name = "imgName") String imgName
+    ) throws Exception {
+        String uploadImg = updateDTO.getUploadImg();
+        String name = updateDTO.getChgName();
+
+        //kic object storage 주소로 변환
+        String imgUrl = userService.uploadImg(uploadImg, imgName);
+        System.out.println(imgUrl);
+
+        // save in mysql database
+        return userService.updateProfile(request, imgUrl, name);
+    }
 }

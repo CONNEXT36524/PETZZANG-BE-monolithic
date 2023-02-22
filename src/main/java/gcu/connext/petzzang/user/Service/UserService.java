@@ -8,6 +8,7 @@ import gcu.connext.petzzang.user.config.jwt.JwtProperties;
 import gcu.connext.petzzang.user.dto.KakaoProfile;
 import gcu.connext.petzzang.user.dto.Mypost;
 import gcu.connext.petzzang.user.dto.OauthToken;
+import gcu.connext.petzzang.user.dto.UpdateDTO;
 import gcu.connext.petzzang.user.entity.User;
 import gcu.connext.petzzang.user.repository.MypostRepository;
 import gcu.connext.petzzang.user.repository.UserRepository;
@@ -27,6 +28,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
+import java.beans.Transient;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -62,7 +65,7 @@ public class UserService {
 
         params.add("grant_type", "authorization_code");
         params.add("client_id","ca40c9bbb798dcd72cc61aac397e894a");
-        params.add("redirect_uri", "http://210.109.61.26/oauth/callback/kakao");
+        params.add("redirect_uri", "http://localhost:3000/oauth/callback/kakao");
         params.add("code", code);
         //params.add("client_secret", "{시크릿 키}"); // 생략 가능!
 
@@ -189,52 +192,88 @@ public class UserService {
     }
 
     //데이터베이스 userImg 필드 수정하기
-    public void updateProfileImg()
-    {
+    public String uploadImg(String imageSource, String imgName) {
 
-    }
-    private void removeNewFile(File targetFile) {
-        if(targetFile.delete()) {
-            log.info("delete success");
-        }else {
-            log.info("delete fail");
+        RestTemplate rt = new RestTemplate();
+
+        String keyBase64 = imageSource.substring(22);
+        byte[] decodedBytes = Base64.getMimeDecoder().decode(keyBase64);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("X-Auth-Token", "gAAAAABj9XzFg3mWBnPRj2umh8SLYZwYb1kDhJ-SFTXU28j3bRBw1PTHQmM3mi35S2VXWrlfxk6EFyRe6f7l6aFIQArv96yTMtLEdkLGbrZqGULHaAedr55lUsoBBiK0qLCV3E5TRUzh_lupK1taJ2dhlwljq4_z9ILAtRWq9jmP5dOugzHwv-C0KPxrTweH5V_fz_KgIIXY");
+        if(imgName.contains(".png")) {
+            System.out.println("png");
+            headers.add("Content-Type", "image/png");
+        } else if(imgName.contains(".jpg")) {
+            System.out.println("jpg");
+            headers.add("Content-Type", "image/jpeg");
         }
-    }
-    private Optional<File> fileconvert(MultipartFile file) throws IOException {
-        File convertFile = new File(file.getOriginalFilename());
-        if (convertFile.createNewFile()) {
-            try (FileOutputStream fos = new FileOutputStream(convertFile)) {
-                fos.write(file.getBytes());
-            }
-            return Optional.of(convertFile);
-        }
-        return Optional.empty();
+
+        HttpEntity<byte[]> entity = new HttpEntity<>(decodedBytes, headers);
+
+        String url = "https://objectstorage.kr-central-1.kakaoi.io/"
+                +"v1/cbfb40eb783145cbbc2fec56fd713fd3/pz-os/thumbnail/"
+                +imgName;
+
+        ResponseEntity<byte[]> imgResposne = rt.exchange(url, HttpMethod.PUT, entity, byte[].class);
+        System.out.println(imgResposne);
+
+        return url;
     }
 
-    private byte[] convert(MultipartFile file) throws IOException {
 
-        Base64.Encoder encoder = Base64.getEncoder();
-        byte[] photoEncode = encoder.encode(file.getBytes());
-        String photoImg = new String(photoEncode, "UTF8");
-
-        return photoEncode;
-    }
 
     public boolean checkNicknameDuplicate(String nickname)
     {
         return userRepository.existsBykakaoNickname(nickname);
     }
 
+    @Transactional
     public String updateNickname(HttpServletRequest request, String name)
     {
         Long userCode = (Long) request.getAttribute("userCode");
 
         User user = userRepository.findByUserCode(userCode);
-        User updateUser = null;
-        updateUser.builder().kakaoId(user.getKakaoid()).userRole(user.getUserrole()).kakaoNickname(name).kakaoEmail(user.getKakaoemail()).kakaoProfileImg(user.getKakaoprofileimg()).build();
-        userRepository.save(updateUser);
+
+        user.update(user.getKakaoid(), user.getKakaoprofileimg(), name, user.getKakaoemail(),user.getUserrole());
 
         return user.getKakaonickname();
 
     }
+
+    @Transactional
+    public String updateImg(HttpServletRequest request, String imgUrl)
+    {
+        Long userCode = (Long) request.getAttribute("userCode");
+
+        User user = userRepository.findByUserCode(userCode);
+
+        user.update(user.getKakaoid(), imgUrl, user.getKakaonickname(), user.getKakaoemail(),user.getUserrole());
+
+        return user.getKakaonickname();
+
+    }
+    public ResponseEntity <byte[]> updateProfile(HttpServletRequest request, String imgUrl, String name)
+    {
+        Long userCode = (Long) request.getAttribute("userCode");
+
+        User user = userRepository.findByUserCode(userCode);
+
+        user.update(user.getKakaoid(), imgUrl, name, user.getKakaoemail(),user.getUserrole());
+            // RestTemplate 객체를 생성합니다.
+        RestTemplate restTemplate = new RestTemplate();
+
+            // header 설정을 위해 HttpHeader 클래스를 생성한 후 HttpEntity 객체에 넣어줍니다.
+        HttpHeaders headers  = new HttpHeaders(); // 담아줄 header
+        headers.add("X-Auth-Token", "gAAAAABj9XzFg3mWBnPRj2umh8SLYZwYb1kDhJ-SFTXU28j3bRBw1PTHQmM3mi35S2VXWrlfxk6EFyRe6f7l6aFIQArv96yTMtLEdkLGbrZqGULHaAedr55lUsoBBiK0qLCV3E5TRUzh_lupK1taJ2dhlwljq4_z9ILAtRWq9jmP5dOugzHwv-C0KPxrTweH5V_fz_KgIIXY");
+
+        HttpEntity<String> entity = new HttpEntity<String>(headers);
+
+        // exchange() 메소드로 api를 호출합니다.
+        ResponseEntity<byte[]> response = restTemplate.exchange(imgUrl,HttpMethod.GET, entity, byte[].class);
+
+
+        return response;
+    }
+
 }
