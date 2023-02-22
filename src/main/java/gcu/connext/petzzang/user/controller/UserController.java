@@ -47,21 +47,23 @@ public class UserController {
     public String getUserName(@RequestParam(name="userCode") String userCode) {
         System.out.println(userCode);
 
-//        Integer intUserCode = 0;
-//        try {
-//            intUserCode = parseInt(userCode);
-//        } catch (NumberFormatException e) {
-//
-//        } catch (Exception e) {
-//
-//        }
-
         String userName="";
 
         User user = userRepository.findByKakaoId(Long.valueOf(userCode));
         userName=user.getKakaonickname();
 
         return userName;
+    }
+
+    @GetMapping("/get/user")
+    public User getUserInfo(@RequestParam(name="nickName") String nickName) {
+        System.out.println(nickName);
+
+
+        User user = userRepository.findByKakaoNickname(nickName);
+
+
+        return user;
     }
 
 
