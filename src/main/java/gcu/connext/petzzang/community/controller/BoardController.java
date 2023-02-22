@@ -3,11 +3,15 @@ package gcu.connext.petzzang.community.controller;
 import gcu.connext.petzzang.PetzzangApplication;
 import gcu.connext.petzzang.community.entity.Post;
 import gcu.connext.petzzang.community.repository.BoardRepository;
-import gcu.connext.petzzang.community.service.BoardService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
@@ -135,4 +139,30 @@ public class BoardController {
         return posts;
     }
 
+    // 프론트에서 받은 Image Url을 통해 KIC에서 이미지 받아오기
+    @GetMapping("/get/img")
+    public ResponseEntity<Object> getUserProfile(@RequestParam String imgUrl) { //(1)
+        System.out.println(imgUrl);
+
+        try {
+            // RestTemplate 객체를 생성합니다.
+            RestTemplate restTemplate = new RestTemplate();
+
+            // header 설정을 위해 HttpHeader 클래스를 생성한 후 HttpEntity 객체에 넣어줍니다.
+            HttpHeaders headers  = new HttpHeaders(); // 담아줄 header
+            headers.add("X-Auth-Token", "gAAAAABj9XzFg3mWBnPRj2umh8SLYZwYb1kDhJ-SFTXU28j3bRBw1PTHQmM3mi35S2VXWrlfxk6EFyRe6f7l6aFIQArv96yTMtLEdkLGbrZqGULHaAedr55lUsoBBiK0qLCV3E5TRUzh_lupK1taJ2dhlwljq4_z9ILAtRWq9jmP5dOugzHwv-C0KPxrTweH5V_fz_KgIIXY");
+
+            HttpEntity<String> entity = new HttpEntity<String>(headers);
+
+            // exchange() 메소드로 api를 호출합니다.
+            ResponseEntity<byte[]> response = restTemplate.exchange(imgUrl,HttpMethod.GET, entity, byte[].class);
+
+            return ResponseEntity.ok().body(response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.ok().body("error");
+        }// end catch
+
+    }
 }

@@ -20,5 +20,4 @@ public class PetzzangApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(PetzzangApplication.class, args);
 	}
-
 }

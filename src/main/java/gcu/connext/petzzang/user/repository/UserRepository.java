@@ -14,11 +14,14 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     User findByUserCode(Long userCode);
 
+
     boolean existsBykakaoNickname (String nameCheck);
 
     @Modifying
     @Transactional
     @Query(value = "UPDATE user set kakaoNickname = :kakaoNickname where userCode = :userCode", nativeQuery = true)
     int updateUser (Long kakaoNickname, String userCode);
+
+    User findByKakaoId(Long userCode);
 
 }
