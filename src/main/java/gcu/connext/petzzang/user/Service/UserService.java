@@ -62,7 +62,7 @@ public class UserService {
 
         params.add("grant_type", "authorization_code");
         params.add("client_id","ca40c9bbb798dcd72cc61aac397e894a");
-        params.add("redirect_uri", "http://localhost:3000/oauth/callback/kakao");
+        params.add("redirect_uri", "http://210.109.61.26/oauth/callback/kakao");
         params.add("code", code);
         //params.add("client_secret", "{시크릿 키}"); // 생략 가능!
 
