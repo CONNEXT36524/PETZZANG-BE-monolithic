@@ -65,7 +65,7 @@ public class UserService {
 
         params.add("grant_type", "authorization_code");
         params.add("client_id","ca40c9bbb798dcd72cc61aac397e894a");
-        params.add("redirect_uri", "http://localhost:3000/oauth/callback/kakao");
+        params.add("redirect_uri", "http://210.109.61.26/oauth/callback/kakao");
         params.add("code", code);
         //params.add("client_secret", "{시크릿 키}"); // 생략 가능!
 
@@ -200,7 +200,7 @@ public class UserService {
         byte[] decodedBytes = Base64.getMimeDecoder().decode(keyBase64);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("X-Auth-Token", "gAAAAABj9XzFg3mWBnPRj2umh8SLYZwYb1kDhJ-SFTXU28j3bRBw1PTHQmM3mi35S2VXWrlfxk6EFyRe6f7l6aFIQArv96yTMtLEdkLGbrZqGULHaAedr55lUsoBBiK0qLCV3E5TRUzh_lupK1taJ2dhlwljq4_z9ILAtRWq9jmP5dOugzHwv-C0KPxrTweH5V_fz_KgIIXY");
+        headers.add("X-Auth-Token", "gAAAAABj9ijLyUAoSzStl1jFVU3XWmt47PhEFMXTXT1iy3jar1Xwd6zpySQhOt4Y4_R46p3hMODI0HZNalOwxeieu-AxFZ9Fm6_HeS8t06KasApgqwNDT9fz45MntBKS9NMTBLEDqjmjWCLTZwICf9uUxXlJvnMSiKYMgYpHUwro38Oucar-nPVrGBeV2xT4YC0i5LLBKhUw");
         if(imgName.contains(".png")) {
             System.out.println("png");
             headers.add("Content-Type", "image/png");
@@ -265,7 +265,7 @@ public class UserService {
 
             // header 설정을 위해 HttpHeader 클래스를 생성한 후 HttpEntity 객체에 넣어줍니다.
         HttpHeaders headers  = new HttpHeaders(); // 담아줄 header
-        headers.add("X-Auth-Token", "gAAAAABj9XzFg3mWBnPRj2umh8SLYZwYb1kDhJ-SFTXU28j3bRBw1PTHQmM3mi35S2VXWrlfxk6EFyRe6f7l6aFIQArv96yTMtLEdkLGbrZqGULHaAedr55lUsoBBiK0qLCV3E5TRUzh_lupK1taJ2dhlwljq4_z9ILAtRWq9jmP5dOugzHwv-C0KPxrTweH5V_fz_KgIIXY");
+        headers.add("X-Auth-Token", "gAAAAABj9ijLyUAoSzStl1jFVU3XWmt47PhEFMXTXT1iy3jar1Xwd6zpySQhOt4Y4_R46p3hMODI0HZNalOwxeieu-AxFZ9Fm6_HeS8t06KasApgqwNDT9fz45MntBKS9NMTBLEDqjmjWCLTZwICf9uUxXlJvnMSiKYMgYpHUwro38Oucar-nPVrGBeV2xT4YC0i5LLBKhUw");
 
         HttpEntity<String> entity = new HttpEntity<String>(headers);
 
