@@ -31,7 +31,7 @@ public class PostingService {
         byte[] decodedBytes = Base64.getMimeDecoder().decode(keyBase64);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("X-Auth-Token", "gAAAAABj9DqI6qIJa3Xu-fJBQY_OwjBCqXT-ppXRV8_DFcAJIhNnd8NUZfjm3xn63C1knAyc8fWykiJWOWd15LhvblUM61r_w_-nYAmXb3N9lhOVmxJWCd1GY2W0H9BQuOC4zvd16cFs-WVDAMsH_xEVyRrdncdR7msiFE_PZ8t65jjVIXWoI_9Oe9FuDVAjPIatKgwQgHi4");
+        headers.add("X-Auth-Token", "gAAAAABj9XzFg3mWBnPRj2umh8SLYZwYb1kDhJ-SFTXU28j3bRBw1PTHQmM3mi35S2VXWrlfxk6EFyRe6f7l6aFIQArv96yTMtLEdkLGbrZqGULHaAedr55lUsoBBiK0qLCV3E5TRUzh_lupK1taJ2dhlwljq4_z9ILAtRWq9jmP5dOugzHwv-C0KPxrTweH5V_fz_KgIIXY");
         if(imgName.contains(".png")) {
             System.out.println("png");
             headers.add("Content-Type", "image/png");

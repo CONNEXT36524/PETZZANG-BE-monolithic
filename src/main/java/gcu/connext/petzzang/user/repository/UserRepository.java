@@ -10,4 +10,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     User findByKakaoEmail(String kakaoEmail);
 
     User findByUserCode(Long userCode);
+
+    User findByKakaoId(Long userCode);
 }
