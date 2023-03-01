@@ -141,7 +141,7 @@ public class UserController {
 
     @GetMapping("/updateProfile")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<byte[]> updateProfile(HttpServletRequest request, @ModelAttribute UpdateDTO updateDTO, @RequestParam(name = "imgName") String imgName
+    public ResponseEntity<String> updateProfile(HttpServletRequest request, @ModelAttribute UpdateDTO updateDTO, @RequestParam(name = "imgName") String imgName
     ) throws Exception {
         String uploadImg = updateDTO.getUploadImg();
         String name = updateDTO.getChgName();
@@ -151,6 +151,6 @@ public class UserController {
         System.out.println(imgUrl);
 
         // save in mysql database
-        return userService.updateProfile(request, imgUrl, name);
+        return ResponseEntity.ok(userService.updateProfile(request, imgUrl, name));
     }
 }

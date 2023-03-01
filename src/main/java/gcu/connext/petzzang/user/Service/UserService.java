@@ -250,30 +250,19 @@ public class UserService {
 
         user.update(user.getKakaoid(), imgUrl, user.getKakaonickname(), user.getKakaoemail(),user.getUserrole());
 
-        return user.getKakaonickname();
+        return user.getKakaoprofileimg();
 
     }
-    public ResponseEntity <byte[]> updateProfile(HttpServletRequest request, String imgUrl, String name)
+    public String updateProfile(HttpServletRequest request, String imgUrl, String name)
     {
         Long userCode = (Long) request.getAttribute("userCode");
 
         User user = userRepository.findByUserCode(userCode);
 
         user.update(user.getKakaoid(), imgUrl, name, user.getKakaoemail(),user.getUserrole());
-            // RestTemplate 객체를 생성합니다.
-        RestTemplate restTemplate = new RestTemplate();
+            // RestTemplate 객체를 생성합니다
 
-            // header 설정을 위해 HttpHeader 클래스를 생성한 후 HttpEntity 객체에 넣어줍니다.
-        HttpHeaders headers  = new HttpHeaders(); // 담아줄 header
-        headers.add("X-Auth-Token", "gAAAAABj9ijLyUAoSzStl1jFVU3XWmt47PhEFMXTXT1iy3jar1Xwd6zpySQhOt4Y4_R46p3hMODI0HZNalOwxeieu-AxFZ9Fm6_HeS8t06KasApgqwNDT9fz45MntBKS9NMTBLEDqjmjWCLTZwICf9uUxXlJvnMSiKYMgYpHUwro38Oucar-nPVrGBeV2xT4YC0i5LLBKhUw");
-
-        HttpEntity<String> entity = new HttpEntity<String>(headers);
-
-        // exchange() 메소드로 api를 호출합니다.
-        ResponseEntity<byte[]> response = restTemplate.exchange(imgUrl,HttpMethod.GET, entity, byte[].class);
-
-
-        return response;
+        return user.getKakaoprofileimg();
     }
 
 }
